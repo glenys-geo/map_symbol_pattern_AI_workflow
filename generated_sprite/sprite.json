@@ -1,0 +1,62 @@
+{
+  "hospital_1": {
+    "x": 0,
+    "y": 0,
+    "width": 20,
+    "height": 13,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbole 1",
+        "layerType": "symbol",
+        "source": "mtk",
+        "sourceLayer": "poi_label",
+        "typeValue": "hospital",
+        "subtypeValue": "hospital",
+        "zoomMin": 12,
+        "zoomMax": 15,
+        "sizePx": 20
+      }
+    ]
+  },
+  "hospital_2": {
+    "x": 22,
+    "y": 0,
+    "width": 50,
+    "height": 28,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbole 1",
+        "layerType": "symbol",
+        "source": "mtk",
+        "sourceLayer": "poi_label",
+        "typeValue": "hospital",
+        "subtypeValue": "hospital",
+        "zoomMin": 14,
+        "zoomMax": 17,
+        "sizePx": 50
+      }
+    ]
+  },
+  "hospital_3": {
+    "x": 74,
+    "y": 0,
+    "width": 75,
+    "height": 46,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbole 1",
+        "layerType": "symbol",
+        "source": "mtk",
+        "sourceLayer": "poi_label",
+        "typeValue": "hospital",
+        "subtypeValue": "hospital",
+        "zoomMin": 16,
+        "zoomMax": 22,
+        "sizePx": 75
+      }
+    ]
+  }
+}
