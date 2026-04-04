@@ -7,11 +7,16 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:#f5f4f0}
-.layout{display:grid;grid-template-columns:480px 1fr;height:100vh}
+.layout{display:grid;grid-template-columns:var(--sidebar-w,480px) 8px minmax(0,1fr);height:100vh}
 .sidebar{background:#fff;border-right:1px solid #e2e0d8;display:flex;flex-direction:column;overflow:hidden}
+.sidebar-resize{cursor:col-resize;background:#f0efe8;border-right:1px solid #e2e0d8;position:relative}
+.sidebar-resize::after{content:'';position:absolute;top:50%;left:50%;width:2px;height:42px;border-radius:999px;background:#c8c5bb;transform:translate(-50%,-50%)}
+.sidebar-resize:hover,.sidebar-resize.drag{background:#e8e6df}
+body.resizing-sidebar{cursor:col-resize;user-select:none}
 .hdr{padding:12px 16px 9px;border-bottom:1px solid #e2e0d8;flex-shrink:0}
 .hdr h1{font-size:15px;font-weight:600;color:#1a1a18}
 .hdr p{font-size:11px;color:#999;margin-top:2px}
+.hdr .thesis-note{font-size:10px;line-height:1.4;color:#777;margin-top:6px}
 .tabs{display:flex;border-bottom:1px solid #e2e0d8;flex-shrink:0}
 .tab{flex:1;padding:7px 4px;font-size:12px;text-align:center;cursor:pointer;color:#999;border-bottom:2px solid transparent}
 .tab.on{color:#1a1a18;border-bottom-color:#1a1a18}
@@ -23,12 +28,15 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .dz:hover,.dz.over{background:#f5f4f0;border-color:#aaa}
 .dz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .dz p{font-size:11px;color:#bbb}
+.import-hint{font-size:10px;color:#999;margin-top:6px;line-height:1.4}
 .pool-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
-.pi{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px;border:1px solid #e8e7e0;border-radius:6px;cursor:grab;user-select:none;background:#fafaf8}
+.pi{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px;border:1px solid #e8e7e0;border-radius:6px;cursor:grab;user-select:none;background:#fafaf8}
 .pi:hover{border-color:#bbb;background:#f0efe8}
 .pi.drag{opacity:.35}
-.pi canvas{width:28px;height:28px;image-rendering:pixelated}
+.pi canvas{display:block;width:auto;height:auto;max-width:28px;max-height:28px;image-rendering:pixelated}
 .pi span{font-size:8px;color:#aaa;max-width:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pirm{position:absolute;top:-5px;right:-5px;width:15px;height:15px;border:none;border-radius:50%;background:#fee2e2;color:#dc2626;font-size:11px;line-height:15px;text-align:center;cursor:pointer;display:none}
+.pi:hover .pirm{display:block}
 .grp-sec{flex:1;overflow-y:auto;padding:10px 14px}
 .gc{border:1px solid #e2e0d8;border-radius:10px;margin-bottom:10px;overflow:hidden;background:#fafaf8}
 .gh{display:flex;align-items:center;gap:5px;padding:7px 10px;background:#f5f4f0;border-bottom:1px solid #e2e0d8}
@@ -38,6 +46,10 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .gmode{font-size:10px;padding:2px 7px;border:none;border-radius:20px;white-space:nowrap;flex-shrink:0;font-weight:500;cursor:pointer;outline:none}
 .gmode.bs{background:#dbeafe;color:#1d4ed8}
 .gmode.bp{background:#dcfce7;color:#166534}
+.gvis{width:26px;height:24px;border:1px solid #ddd;border-radius:5px;background:#fff;color:#444;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
+.gvis:hover{background:#f5f4f0}
+.gvis.off{color:#aaa;background:#f5f4f0}
+.gvis svg{display:block;width:16px;height:16px}
 .gsrc{font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#fff;color:#333;cursor:pointer;flex-shrink:0}
 .gtype,.gsubtype{font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#fff;color:#333;min-width:90px;max-width:110px;flex-shrink:0}
 .gname{font-size:11px;font-weight:500;color:#1a1a18;flex:1;border:none;background:transparent;outline:none;min-width:30px}
@@ -56,7 +68,7 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .sf input{flex:1;min-width:0;font-size:10px;padding:2px 4px;border:1px solid #ddd;border-radius:4px;background:#fff;color:#333;text-align:center}
 .sf .u{font-size:9px;color:#ccc}
 .siw{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:3px}
-.siw canvas{width:30px;height:30px;image-rendering:pixelated;border-radius:4px}
+.siw canvas{display:block;width:auto;height:auto;max-width:30px;max-height:30px;image-rendering:pixelated;border-radius:4px}
 .siw span{font-size:8px;color:#888;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sirm{position:absolute;top:-4px;right:-4px;width:13px;height:13px;border-radius:50%;background:#fee2e2;color:#dc2626;font-size:9px;line-height:13px;text-align:center;cursor:pointer;display:none}
 .siw:hover .sirm{display:block}
@@ -72,13 +84,19 @@ html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:
 .st.ok{color:#16a34a}
 .code-wrap{flex:1;overflow:auto;padding:12px;background:#f8f7f4}
 pre{font-family:'Menlo','Monaco',monospace;font-size:10px;color:#333;white-space:pre;line-height:1.65}
-.map-area{position:relative}
+.map-area{position:relative;min-width:0}
 #map{width:100%;height:100%}
 #zi{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);padding:5px 11px;border-radius:5px;font-size:13px;box-shadow:0 1px 5px rgba(0,0,0,.18);z-index:1;color:#333}
 #leg{display:none}
-.lr{display:flex;align-items:center;gap:7px}
-.ld{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.ls{width:12px;height:9px;flex-shrink:0;border-radius:2px}
+#legend{position:absolute;bottom:24px;left:12px;max-width:240px;background:rgba(255,255,255,.95);padding:10px 12px;border-radius:8px;font-size:11px;box-shadow:0 1px 5px rgba(0,0,0,.15);z-index:1;color:#333;display:none}
+.legend-title{font-size:10px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.legend-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.legend-row:last-child{margin-bottom:0}
+.legend-swatch{width:30px;height:24px;border:1px solid #d7d5cf;border-radius:5px;background:#f8f7f4;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.legend-swatch canvas{display:block;max-width:26px;max-height:20px;width:auto;height:auto;image-rendering:pixelated}
+.legend-meta{min-width:0}
+.legend-name{font-size:11px;font-weight:600;color:#1a1a18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legend-filter{font-size:10px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -93,10 +111,15 @@ pre{font-family:'Menlo','Monaco',monospace;font-size:10px;color:#333;white-space
       <div class="pool-sec">
         <div class="sec-lbl">
           <span>Icon-Pool</span>
-          <button class="btn" style="font-size:10px;padding:3px 8px" onclick="document.getElementById('fi').click()">+ PNGs</button>
+          <div style="display:flex;gap:6px">
+            <button class="btn" style="font-size:10px;padding:3px 8px" title="Bitte sprite.png und sprite.json gemeinsam auswaehlen" onclick="document.getElementById('fij').click()">Sprite + JSON laden</button>
+            <button class="btn" style="font-size:10px;padding:3px 8px" onclick="document.getElementById('fi').click()">+ PNGs</button>
+          </div>
           <input type="file" id="fi" accept=".png,image/png" multiple style="display:none" onchange="onFiles(this.files)">
+          <input type="file" id="fij" accept=".png,.json,image/png,application/json" multiple style="display:none" onchange="importSavedSprite(this.files);this.value=''">
         </div>
         <div class="dz" id="dz"><input type="file" accept=".png,image/png" multiple onchange="onFiles(this.files)"><p>PNGs hier ablegen oder klicken</p></div>
+        <p class="import-hint">Beim Sprite-Import bitte <strong>sprite.png</strong> und <strong>sprite.json</strong> gemeinsam auswählen.</p>
         <div class="pool-grid" id="pg"></div>
       </div>
       <div class="grp-sec" id="gs"></div>
@@ -113,9 +136,11 @@ pre{font-family:'Menlo','Monaco',monospace;font-size:10px;color:#333;white-space
     </div>
     <div class="panel" id="pan-code"><div class="code-wrap"><pre id="co">// Sprite noch nicht gebaut</pre></div></div>
   </div>
+  <div class="sidebar-resize" id="sidebar-resize" title="Seitenleiste ziehen"></div>
   <div class="map-area">
     <div id="map"></div>
     <div id="zi">Zoom: --</div>
+    <div id="legend"></div>
     <div id="leg">
       <div class="lr"><div class="ls" style="background:#2d6a2d;opacity:.4;border:1px solid #1e4d1e"></div>Waldfläche</div>
       <div class="lr"><div class="ld" style="background:#e07b20;border:1.5px solid #b05a10"></div>Baum (Wald)</div>
@@ -142,6 +167,9 @@ const STYLE_URL=APP_ORIGIN+'/style.json';
 const SPRITE_URL=APP_ORIGIN+'/sprite/sprite';
 const SPRITE_UPLOAD_URL=APP_ORIGIN+'/api/sprite';
 const APP_STATE_KEY='sprite-builder-v1';
+const DEFAULT_SIDEBAR_WIDTH=480;
+const MIN_SIDEBAR_WIDTH=360;
+const MAX_SIDEBAR_WIDTH=900;
 
 const SRCS = {
   'poi_label': {
@@ -162,7 +190,7 @@ const SRCS = {
   }
 };
 
-let pool={}, groups=[], pngBlob=null, spritePngDataUrl='', jsonOut=null, ready=false, dragged=null, active=[];
+let pool={}, groups=[], pngBlob=null, spritePngDataUrl='', jsonOut=null, ready=false, dragged=null, active=[], legendState=[], sidebarWidth=DEFAULT_SIDEBAR_WIDTH;
 
 function ss(m,t){const e=document.getElementById('st');e.textContent=m;e.className='st'+(t?' '+t:'');}
 
@@ -172,11 +200,34 @@ function switchTab(t){
   document.getElementById('pan-code').classList.toggle('on',t==='code');
 }
 
+function initHeaderNote(){
+  const hdr=document.querySelector('.hdr');
+  if(!hdr||hdr.querySelector('.thesis-note')) return;
+  const note=document.createElement('p');
+  note.className='thesis-note';
+  note.textContent='Created for the master thesis: "Affective design of symbols and patterns in multi-scale maps using generative artificial intelligence".';
+  hdr.appendChild(note);
+}
+
+function eyeSvg(isVisible){
+  return isVisible
+    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 12S5.7 5.8 12 5.8 21.8 12 21.8 12 18.3 18.2 12 18.2 2.2 12 2.2 12Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'
+    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 12S5.7 5.8 12 5.8 21.8 12 21.8 12 18.3 18.2 12 18.2 2.2 12 2.2 12Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+}
+
+function renderVisibilityButton(btn,isVisible){
+  btn.classList.toggle('off',!isVisible);
+  btn.title=isVisible ? 'Layer ausblenden' : 'Layer einblenden';
+  btn.setAttribute('aria-label',btn.title);
+  btn.innerHTML=eyeSvg(isVisible);
+}
+
 function serializeGroups(){
   return groups.map(g=>({
     id:g.id,
     name:g.name,
     type:g.type,
+    visible:g.visible!==false,
     src:g.src,
     typeValue:g.typeValue||'',
     subtypeValue:g.subtypeValue||'',
@@ -205,11 +256,64 @@ function persistState(){
       pool:serializePool(),
       groups:serializeGroups(),
       jsonOut,
-      spritePngDataUrl
+      spritePngDataUrl,
+      sidebarWidth
     }));
   }catch(e){
     console.warn('localStorage save failed',e);
   }
+}
+
+function clampSidebarWidth(value){
+  const maxByViewport=Math.max(MIN_SIDEBAR_WIDTH,Math.min(MAX_SIDEBAR_WIDTH,window.innerWidth-320));
+  return Math.min(maxByViewport,Math.max(MIN_SIDEBAR_WIDTH,Math.round(Number(value)||DEFAULT_SIDEBAR_WIDTH)));
+}
+
+function applySidebarWidth(width){
+  sidebarWidth=clampSidebarWidth(width);
+  const layout=document.querySelector('.layout');
+  if(layout) layout.style.setProperty('--sidebar-w',sidebarWidth+'px');
+  if(ready) map.resize();
+}
+
+function initSidebarResize(){
+  const handle=document.getElementById('sidebar-resize');
+  if(!handle) return;
+
+  let startX=0;
+  let startWidth=sidebarWidth;
+  let dragging=false;
+
+  function stopDrag(){
+    if(!dragging) return;
+    dragging=false;
+    handle.classList.remove('drag');
+    document.body.classList.remove('resizing-sidebar');
+    window.removeEventListener('mousemove',onDrag);
+    window.removeEventListener('mouseup',stopDrag);
+    persistState();
+  }
+
+  function onDrag(e){
+    if(!dragging) return;
+    applySidebarWidth(startWidth+(e.clientX-startX));
+  }
+
+  handle.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    startX=e.clientX;
+    startWidth=sidebarWidth;
+    dragging=true;
+    handle.classList.add('drag');
+    document.body.classList.add('resizing-sidebar');
+    window.addEventListener('mousemove',onDrag);
+    window.addEventListener('mouseup',stopDrag);
+  });
+
+  window.addEventListener('resize',()=>{
+    applySidebarWidth(sidebarWidth);
+    persistState();
+  });
 }
 
 function normalizeGroupState(rawGroup){
@@ -226,6 +330,7 @@ function normalizeGroupState(rawGroup){
     id:(rawGroup&&rawGroup.id)||('g'+Date.now()+'-'+Math.random().toString(36).slice(2,7)),
     name:(rawGroup&&rawGroup.name)||(type==='symbol'?'Symbole':'Muster'),
     type,
+    visible:!(rawGroup&&rawGroup.visible===false),
     src,
     typeValue:(rawGroup&&typeof rawGroup.typeValue==='string'&&rawGroup.typeValue.trim())?rawGroup.typeValue.trim():SRCS[src].defaultTypeValue,
     subtypeValue:(rawGroup&&typeof rawGroup.subtypeValue==='string')?rawGroup.subtypeValue.trim():'',
@@ -268,6 +373,172 @@ function restorePoolIcon(name,dataUrl){
   });
 }
 
+function readFileAsDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(reader.error||new Error('Datei konnte nicht gelesen werden'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImageFromDataUrl(dataUrl){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error('Sprite-PNG konnte nicht geladen werden'));
+    img.src=dataUrl;
+  });
+}
+
+function clearMapArtifacts(){
+  active.forEach(id=>{try{if(map.getLayer(id))map.removeLayer(id);}catch(e){}});
+  active=[];
+  if(!ready) return;
+  groups.forEach(g=>g.slots.forEach(slot=>{
+    if(slot._sn&&map.hasImage(slot._sn)){
+      try{map.removeImage(slot._sn);}catch(e){}
+    }
+    slot._sn=null;
+  }));
+  Object.keys(pool).forEach(name=>{
+    if(map.hasImage(name)){
+      try{map.removeImage(name);}catch(e){}
+    }
+  });
+}
+
+function sourceKeyFromImportedConfig(cfg,layerType){
+  const fallbackSrc=layerType==='pattern'?'natural':'poi_label';
+  const sourceLayer=(cfg&&typeof cfg.sourceLayer==='string')?cfg.sourceLayer:'';
+  if(SRCS[sourceLayer]){
+    const srcMeta=SRCS[sourceLayer];
+    if((layerType==='symbol'&&srcMeta.pt)||(layerType==='pattern'&&!srcMeta.pt)) return sourceLayer;
+  }
+  const sourceName=(cfg&&typeof cfg.source==='string')?cfg.source:'';
+  const match=Object.entries(SRCS).find(([,src])=>
+    src.source===sourceName &&
+    src.sourceLayer===sourceLayer &&
+    ((layerType==='symbol'&&src.pt)||(layerType==='pattern'&&!src.pt))
+  );
+  return match ? match[0] : fallbackSrc;
+}
+
+function groupsFromImportedSpriteJson(spriteJson){
+  const grouped=new Map();
+
+  Object.entries(spriteJson||{}).forEach(([iconName,meta])=>{
+    const configs=Array.isArray(meta&&meta.config)?meta.config:[];
+    configs.forEach(cfg=>{
+      const type=(cfg&&cfg.layerType)==='pattern'?'pattern':'symbol';
+      const src=sourceKeyFromImportedConfig(cfg,type);
+      const typeValue=(cfg&&typeof cfg.typeValue==='string')?cfg.typeValue.trim():'';
+      const subtypeValue=(cfg&&typeof cfg.subtypeValue==='string')?cfg.subtypeValue.trim():'';
+      const name=(cfg&&typeof cfg.group==='string'&&cfg.group.trim())?cfg.group.trim():(type==='symbol'?'Symbole':'Muster');
+      const visible=!(cfg&&cfg.visible===false);
+      const key=[name,type,src,typeValue,subtypeValue,visible?'1':'0'].join('|');
+
+      if(!grouped.has(key)){
+        grouped.set(key,{
+          id:'g'+Date.now()+'-'+Math.random().toString(36).slice(2,7),
+          name,
+          type,
+          visible,
+          src,
+          typeValue,
+          subtypeValue,
+          slots:[]
+        });
+      }
+
+      grouped.get(key).slots.push({
+        zMin:Number(cfg&&cfg.zoomMin)||0,
+        zMax:Number(cfg&&cfg.zoomMax)||0,
+        px:Math.max(1,Number(cfg&&cfg.sizePx)||(type==='pattern'?64:24)),
+        icon:iconName
+      });
+    });
+  });
+
+  return Array.from(grouped.values()).map(rawGroup=>{
+    rawGroup.slots=rawGroup.slots.sort((a,b)=>a.zMin-b.zMin).slice(0,3);
+    return normalizeGroupState(rawGroup);
+  });
+}
+
+async function importSpriteBundle(spriteJson,atlasDataUrl){
+  if(!spriteJson||typeof spriteJson!=='object') throw new Error('sprite.json ist ungueltig');
+  const atlasImg=await loadImageFromDataUrl(atlasDataUrl);
+  const nextPool={};
+
+  Object.entries(spriteJson).forEach(([iconName,meta])=>{
+    const sx=Number(meta&&meta.x);
+    const sy=Number(meta&&meta.y);
+    const sw=Number(meta&&meta.width);
+    const sh=Number(meta&&meta.height);
+    if(!iconName||!Number.isFinite(sx)||!Number.isFinite(sy)||!Number.isFinite(sw)||!Number.isFinite(sh)||sw<=0||sh<=0) return;
+
+    const c=document.createElement('canvas');
+    c.width=Math.round(sw);
+    c.height=Math.round(sh);
+    c.getContext('2d').drawImage(atlasImg,sx,sy,sw,sh,0,0,c.width,c.height);
+    nextPool[iconName]={canvas:c,w:c.width,h:c.height,dataUrl:c.toDataURL('image/png')};
+  });
+
+  if(!Object.keys(nextPool).length) throw new Error('sprite.json enthaelt keine gueltigen Sprite-Eintraege');
+
+  clearMapArtifacts();
+  pool=nextPool;
+  groups=groupsFromImportedSpriteJson(spriteJson);
+  jsonOut=spriteJson;
+  spritePngDataUrl=atlasDataUrl;
+  pngBlob=dataUrlToBlob(spritePngDataUrl);
+
+  if(!groups.length){
+    addGroup('symbol');
+    addGroup('pattern');
+  }else{
+    renderGroups();
+  }
+  renderPool();
+  genCode();
+  document.getElementById('dp').disabled=!pngBlob;
+  document.getElementById('dj').disabled=!jsonOut;
+  persistState();
+
+  const hasRenderableState=groups.some(g=>g.slots.some(s=>s.icon&&pool[s.icon]));
+  if(ready&&hasRenderableState){
+    await build();
+  }else{
+    syncLegendState();
+    updateLegend();
+    ss(Object.keys(pool).length+' Icons aus Sprite importiert'+(groups.length?'':' | keine Layer-Konfiguration in sprite.json'),'ok');
+  }
+}
+
+async function importSavedSprite(files){
+  const selected=[...(files||[])];
+  const pngFile=selected.find(f=>/\.png$/i.test(f.name)||f.type==='image/png');
+  const jsonFile=selected.find(f=>/\.json$/i.test(f.name)||f.type==='application/json');
+  if(!pngFile||!jsonFile){
+    ss('Bitte sprite.png und sprite.json gemeinsam auswaehlen','err');
+    return;
+  }
+
+  ss('Sprite-Import laeuft ...');
+  try{
+    const [spriteJsonText,atlasDataUrl]=await Promise.all([
+      jsonFile.text(),
+      readFileAsDataUrl(pngFile)
+    ]);
+    const spriteJson=JSON.parse(spriteJsonText);
+    await importSpriteBundle(spriteJson,atlasDataUrl);
+  }catch(e){
+    console.warn(e);
+    ss('Sprite-Import fehlgeschlagen | '+(e&&e.message?e.message:String(e)),'err');
+  }
+}
+
 async function restorePersistedState(){
   let saved;
   try{
@@ -291,6 +562,7 @@ async function restorePersistedState(){
   jsonOut=(saved&&saved.jsonOut&&typeof saved.jsonOut==='object')?saved.jsonOut:null;
   spritePngDataUrl=(saved&&typeof saved.spritePngDataUrl==='string')?saved.spritePngDataUrl:'';
   pngBlob=dataUrlToBlob(spritePngDataUrl);
+  applySidebarWidth(saved&&saved.sidebarWidth);
 
   renderPool();
   renderGroups();
@@ -332,6 +604,51 @@ function onFiles(files){
   });
 }
 
+function removePoolIcon(name){
+  if(!pool[name]) return;
+  delete pool[name];
+
+  groups.forEach(g=>{
+    g.slots.forEach(slot=>{
+      if(slot.icon!==name) return;
+      if(slot._sn&&ready&&map.hasImage(slot._sn)){
+        try{map.removeImage(slot._sn);}catch(e){}
+      }
+      slot.icon=null;
+      slot._sn=null;
+    });
+  });
+
+  if(ready&&map.hasImage(name)){
+    try{map.removeImage(name);}catch(e){}
+  }
+
+  renderPool();
+  renderGroups();
+  persistState();
+
+  const poolCount=Object.keys(pool).length;
+  if(ready&&poolCount){
+    build();
+    return;
+  }
+
+  active.forEach(id=>{try{if(map.getLayer(id))map.removeLayer(id);}catch(e){}});
+  active=[];
+  if(!poolCount){
+    jsonOut=null;
+    pngBlob=null;
+    spritePngDataUrl='';
+  }
+  document.getElementById('dp').disabled=!pngBlob;
+  document.getElementById('dj').disabled=!jsonOut;
+  syncLegendState();
+  updateLegend();
+  genCode();
+  persistState();
+  ss(poolCount+' Icons im Pool',poolCount?'':'');
+}
+
 function renderPool(){
   const g=document.getElementById('pg'); g.innerHTML='';
   Object.keys(pool).forEach(name=>{
@@ -339,9 +656,21 @@ function renderPool(){
     const c=pool[name].canvas.cloneNode();
     c.width=pool[name].canvas.width; c.height=pool[name].canvas.height;
     c.getContext('2d').drawImage(pool[name].canvas,0,0);
-    c.style.cssText='width:28px;height:28px;image-rendering:pixelated';
+    c.style.cssText='display:block;width:auto;height:auto;max-width:28px;max-height:28px;image-rendering:pixelated';
     const lbl=document.createElement('span'); lbl.textContent=name;
-    item.appendChild(c); item.appendChild(lbl);
+    const rm=document.createElement('button');
+    rm.type='button';
+    rm.className='pirm';
+    rm.textContent='×';
+    rm.title='PNG entfernen';
+    rm.onmousedown=e=>e.stopPropagation();
+    rm.onclick=e=>{
+      e.stopPropagation();
+      removePoolIcon(name);
+    };
+    item.appendChild(rm);
+    item.appendChild(c);
+    item.appendChild(lbl);
     item.addEventListener('dragstart',e=>{
       dragged=name; item.classList.add('drag');
       e.dataTransfer.effectAllowed='copy'; e.dataTransfer.setData('text/plain',name);
@@ -356,6 +685,7 @@ function addGroup(type){
   const n=groups.filter(g=>g.type===type).length+1;
   const defSrc=type==='pattern'?'natural':'poi_label';
   groups.push({id, name:(type==='symbol'?'Symbole':'Muster')+' '+n, type, src:defSrc,
+    visible:true,
     typeValue:SRCS[defSrc].defaultTypeValue,
     subtypeValue:'',
     slots:[
@@ -389,6 +719,22 @@ function renderGroups(){
 
     // Header
     const hdr=document.createElement('div'); hdr.className='gh';
+    const visBtn=document.createElement('button');
+    visBtn.type='button';
+    visBtn.className='gvis';
+    renderVisibilityButton(visBtn,g.visible!==false);
+    visBtn.onclick=()=>{
+      g.visible=g.visible===false;
+      renderVisibilityButton(visBtn,g.visible!==false);
+      persistState();
+      if(ready&&Object.keys(pool).length){
+        build();
+      }else{
+        syncLegendState();
+        updateLegend();
+      }
+    };
+
     const modeSel=document.createElement('select');
     modeSel.className='gmode '+(g.type==='symbol'?'bs':'bp');
     [['symbol','Symbol'],['pattern','Muster']].forEach(([value,label])=>{
@@ -438,7 +784,7 @@ function renderGroups(){
     ni.oninput=e=>{g.name=e.target.value;persistState();};
     const rm=document.createElement('button'); rm.className='grm'; rm.textContent='✕';
     rm.onclick=()=>{groups.splice(gi,1);persistState();renderGroups();};
-    hdr.appendChild(modeSel); hdr.appendChild(sel); hdr.appendChild(ti); hdr.appendChild(sti); hdr.appendChild(ni); hdr.appendChild(rm);
+    hdr.appendChild(visBtn); hdr.appendChild(modeSel); hdr.appendChild(sel); hdr.appendChild(ti); hdr.appendChild(sti); hdr.appendChild(ni); hdr.appendChild(rm);
 
     // Slot column headers
     const sh=document.createElement('div'); sh.className='sh';
@@ -473,7 +819,7 @@ function renderGroups(){
         const c=pool[slot.icon].canvas.cloneNode();
         c.width=pool[slot.icon].canvas.width; c.height=pool[slot.icon].canvas.height;
         c.getContext('2d').drawImage(pool[slot.icon].canvas,0,0);
-        c.style.cssText='width:30px;height:30px;image-rendering:pixelated';
+        c.style.cssText='display:block;width:auto;height:auto;max-width:30px;max-height:30px;image-rendering:pixelated';
         const nm=document.createElement('span'); nm.textContent=slot.icon;
         const sr=document.createElement('div'); sr.className='sirm'; sr.textContent='✕';
         sr.onclick=()=>{slot.icon=null;persistState();renderGroups();};
@@ -512,6 +858,122 @@ function typeFilterForGroup(g){
   const subtypeValue=(g.subtypeValue||'').trim();
   const filterExpr=['==',['get','type'],typeValue];
   return subtypeValue ? ['all',filterExpr,['==',['get','subtype'],subtypeValue]] : filterExpr;
+}
+
+function previewCanvasForIcon(iconName,maxW,maxH){
+  const src=pool[iconName]&&pool[iconName].canvas;
+  if(!src) return null;
+  const c=src.cloneNode();
+  c.width=src.width;
+  c.height=src.height;
+  c.getContext('2d').drawImage(src,0,0);
+  c.style.cssText='display:block;width:auto;height:auto;max-width:'+maxW+'px;max-height:'+maxH+'px;image-rendering:pixelated';
+  return c;
+}
+
+function patternSwatchForIcon(iconName){
+  const src=pool[iconName]&&pool[iconName].canvas;
+  if(!src) return null;
+  const c=document.createElement('canvas');
+  c.width=30;
+  c.height=24;
+  const ctx=c.getContext('2d');
+  const pattern=ctx.createPattern(src,'repeat');
+  if(pattern){
+    ctx.fillStyle=pattern;
+    ctx.fillRect(0,0,c.width,c.height);
+  }else{
+    ctx.drawImage(src,0,0,Math.min(src.width,c.width),Math.min(src.height,c.height));
+  }
+  c.style.cssText='display:block;width:30px;height:24px;image-rendering:pixelated';
+  return c;
+}
+
+function syncLegendState(){
+  legendState=groups.map(g=>{
+    const src=sourceMetaForGroup(g);
+    const slots=g.slots
+      .filter(s=>s.icon&&pool[s.icon])
+      .map(s=>({zMin:Number(s.zMin)||0,zMax:Number(s.zMax)||0,icon:s.icon}))
+      .sort((a,b)=>a.zMin-b.zMin);
+    return {
+      id:g.id,
+      name:g.name,
+      type:g.type,
+      visible:g.visible!==false,
+      sourceLayer:src.sourceLayer,
+      typeValue:(g.typeValue||'').trim(),
+      subtypeValue:(g.subtypeValue||'').trim(),
+      slots
+    };
+  }).filter(g=>g.visible!==false&&g.slots.length&&g.typeValue);
+}
+
+function legendSlotForZoom(slots,zoom){
+  let fallback=null;
+  for(let i=0;i<slots.length;i++){
+    const slot=slots[i];
+    if(!fallback) fallback=slot;
+    if(zoom>=slot.zMin&&zoom<=slot.zMax) return slot;
+    if(zoom>=slot.zMin) fallback=slot;
+  }
+  return fallback;
+}
+
+function updateLegend(){
+  const legend=document.getElementById('legend');
+  if(!legend) return;
+  if(!legendState.length||!ready){
+    legend.innerHTML='';
+    legend.style.display='none';
+    return;
+  }
+
+  const z=map.getZoom();
+  legend.innerHTML='';
+  const title=document.createElement('div');
+  title.className='legend-title';
+  title.textContent='Legende';
+  legend.appendChild(title);
+
+  let rowCount=0;
+  legendState.forEach(g=>{
+    const slot=legendSlotForZoom(g.slots,z);
+    if(!slot||!pool[slot.icon]) return;
+
+    const row=document.createElement('div');
+    row.className='legend-row';
+
+    const swatch=document.createElement('div');
+    swatch.className='legend-swatch';
+    const iconCanvas=g.type==='pattern' ? patternSwatchForIcon(slot.icon) : previewCanvasForIcon(slot.icon,26,20);
+    if(iconCanvas) swatch.appendChild(iconCanvas);
+
+    const meta=document.createElement('div');
+    meta.className='legend-meta';
+
+    const name=document.createElement('div');
+    name.className='legend-name';
+    name.textContent=g.typeValue;
+
+    const filter=document.createElement('div');
+    filter.className='legend-filter';
+    filter.textContent=g.subtypeValue ? 'subtype='+g.subtypeValue : '';
+
+    meta.appendChild(name);
+    if(filter.textContent) meta.appendChild(filter);
+    row.appendChild(swatch);
+    row.appendChild(meta);
+    legend.appendChild(row);
+    rowCount++;
+  });
+
+  if(!rowCount){
+    legend.innerHTML='';
+    legend.style.display='none';
+    return;
+  }
+  legend.style.display='block';
 }
 
 function beforeLayerForGroup(g){
@@ -584,6 +1046,7 @@ async function build(){
         cfg.push({
           group:g.name,
           layerType:g.type,
+          visible:g.visible!==false,
           source:src.source,
           sourceLayer:src.sourceLayer,
           typeValue:(g.typeValue||'').trim(),
@@ -627,6 +1090,7 @@ async function build(){
     if(!valid.length)return;
     const src=sourceMetaForGroup(g);
     const filterExpr=typeFilterForGroup(g);
+    const layerVisibility=g.visible===false?'none':'visible';
     if(!filterExpr){
       skipped++;
       return;
@@ -647,6 +1111,7 @@ async function build(){
           filter:filterExpr,
           minzoom:oMin,maxzoom:oMax,
           layout:{
+            'visibility':layerVisibility,
             'icon-image':ie,
             'icon-size':se,
             'icon-anchor':'center'
@@ -679,6 +1144,7 @@ async function build(){
         map.addLayer({id:lid,type:'fill',source:src.source,'source-layer':src.sourceLayer,
           filter:filterExpr,
           minzoom:oMin,maxzoom:oMax,
+          layout:{'visibility':layerVisibility},
           paint:{'fill-pattern':pe,'fill-opacity':1}
         },beforeLayerForGroup(g));
         active.push(lid); pc++;
@@ -700,6 +1166,8 @@ async function build(){
   document.getElementById('dp').disabled=!pngBlob;
   document.getElementById('dj').disabled=false;
   persistState();
+  syncLegendState();
+  updateLegend();
 
   genCode();
 
@@ -707,13 +1175,14 @@ async function build(){
   const curZ = map.getZoom();
   let inRange = false;
   groups.forEach(g=>{
+    if(g.visible===false) return;
     const v=g.slots.filter(s=>s.icon&&pool[s.icon]);
     if(!v.length) return;
     const oMin=Math.min(...v.map(s=>s.zMin));
     const oMax=Math.max(...v.map(s=>s.zMax));
     if(curZ>=oMin && curZ<=oMax) inRange=true;
   });
-  const statusWarn = !inRange && groups.some(g=>g.slots.some(s=>s.icon)) ? ` | Zoom ${curZ.toFixed(1)} ausserhalb aller Zoom-Bereiche` : '';
+  const statusWarn = !inRange && groups.some(g=>g.visible!==false&&g.slots.some(s=>s.icon)) ? ` | Zoom ${curZ.toFixed(1)} ausserhalb aller Zoom-Bereiche` : '';
   const skipWarn = skipped ? ` | ${skipped} Gruppe(n) ohne type-Filter uebersprungen` : '';
   const spriteWarn = spriteUploadOk ? '' : ' | Sprite-Upload an localhost:8080 fehlgeschlagen';
   ss(names.length+' Icons | '+sc+' Symbol | '+pc+' Muster'+statusWarn+skipWarn+spriteWarn,(statusWarn||skipWarn||spriteWarn)?'err':'ok');
@@ -767,6 +1236,7 @@ function genCode(){
     if(!v.length)return;
     const src=sourceMetaForGroup(g);
     const filterExpr=typeFilterForGroup(g);
+    const layerVisibility=g.visible===false?'none':'visible';
     const oMin=Math.min(...v.map(s=>s.zMin));
     const oMax=Math.max(...v.map(s=>s.zMax));
     c+='// '+g.name+' | '+src.sourceLayer+' | type='+(g.typeValue||'')+' | subtype='+(g.subtypeValue||'')+' | Z'+oMin+'-'+oMax+'\n';
@@ -785,6 +1255,7 @@ function genCode(){
       c+="  minzoom:"+oMin+",\n";
       c+="  maxzoom:"+oMax+",\n";
       c+="  layout:{\n";
+      c+="    'visibility':'"+layerVisibility+"',\n";
       c+="    'icon-image':"+ie+",\n";
       c+="    'icon-size':"+se+",\n";
       c+="    'icon-anchor':'center'\n";
@@ -801,6 +1272,7 @@ function genCode(){
       if(filterExpr) c+="  filter:"+JSON.stringify(filterExpr)+",\n";
       c+="  minzoom:"+oMin+",\n";
       c+="  maxzoom:"+oMax+",\n";
+      c+="  layout:{'visibility':'"+layerVisibility+"'},\n";
       c+="  paint:{'fill-pattern':"+pe+",'fill-opacity':1}\n";
       c+="}";
       if(src.beforeId) c+=",'"+src.beforeId+"'";
@@ -837,7 +1309,13 @@ map.addControl(new maplibregl.NavigationControl(),'bottom-right');
 const zi=document.getElementById('zi');
 const legacyLeg=document.getElementById('leg');
 if(legacyLeg) legacyLeg.remove();
-map.on('zoom',()=>{zi.textContent='Zoom: '+map.getZoom().toFixed(1);});
+initHeaderNote();
+applySidebarWidth(DEFAULT_SIDEBAR_WIDTH);
+initSidebarResize();
+map.on('zoom',()=>{
+  zi.textContent='Zoom: '+map.getZoom().toFixed(1);
+  updateLegend();
+});
 map.on('error',e=>{
   const msg=(e&&e.error&&e.error.message)?e.error.message:String((e&&e.error)||'unbekannter Map-Fehler');
   ss('Map-Fehler | '+msg,'err');
@@ -856,6 +1334,8 @@ map.on('load',async()=>{
     await build();
   }else{
     genCode();
+    syncLegendState();
+    updateLegend();
     const msg=restored
       ? 'Bereit | Zustand aus localStorage geladen | Style von '+STYLE_URL
       : 'Bereit | Style von '+STYLE_URL+' geladen | PNGs hochladen und Gruppen anlegen';
