@@ -1,3 +1,4 @@
+## Symbol and Pattern generation with genAI Workflow This workflow was created within the process of the masterthesis "Affective Design of symbols and pattern with generative artificial intelligence" for the university of vienna.
 # RUN local server
 node .\sprite_builder_server.js
 in this case localhost:8080
