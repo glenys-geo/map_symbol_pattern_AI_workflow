@@ -1,0 +1,3984 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<title>Sprite Builder</title>
+<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.22.0/dist/maplibre-gl.css" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:system-ui,-apple-system,sans-serif;background:#f5f4f0}
+.layout{display:grid;grid-template-columns:var(--sidebar-w,480px) 8px minmax(0,1fr);height:100vh}
+.sidebar{background:#fff;border-right:1px solid #e2e0d8;display:flex;flex-direction:column;overflow:hidden}
+.sidebar-resize{cursor:col-resize;background:#f0efe8;border-right:1px solid #e2e0d8;position:relative}
+.sidebar-resize::after{content:'';position:absolute;top:50%;left:50%;width:2px;height:42px;border-radius:999px;background:#c8c5bb;transform:translate(-50%,-50%)}
+.sidebar-resize:hover,.sidebar-resize.drag{background:#e8e6df}
+body.resizing-sidebar{cursor:col-resize;user-select:none}
+.hdr{padding:12px 16px 9px;border-bottom:1px solid #e2e0d8;flex-shrink:0}
+.hdr h1{font-size:15px;font-weight:600;color:#1a1a18}
+.hdr p{font-size:11px;color:#999;margin-top:2px}
+.hdr .thesis-note{font-size:10px;line-height:1.4;color:#777;margin-top:6px}
+.base-row{display:flex;gap:6px;align-items:center;margin-top:8px}
+.base-sel{min-width:0;height:30px;border:1px solid #ddd;border-radius:6px;background:#fff;color:#333;font-size:11px;padding:0 9px;flex:1}
+.base-help{font-size:10px;line-height:1.35;color:#888;margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid #e2e0d8;flex-shrink:0}
+.tab{flex:1;padding:7px 4px;font-size:12px;text-align:center;cursor:pointer;color:#999;border-bottom:2px solid transparent}
+.tab.on{color:#1a1a18;border-bottom-color:#1a1a18}
+.panel{display:none;flex-direction:column;flex:1;overflow:hidden}
+.panel.on{display:flex}
+.pool-sec{padding:9px 14px;border-bottom:1px solid #e2e0d8;flex-shrink:0}
+.pool-sec.collapsed{padding-bottom:9px}
+.sec-lbl{font-size:10px;font-weight:600;color:#aaa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.pool-head-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.pool-toggle{font-size:10px;padding:3px 8px}
+.pool-body{display:flex;flex-direction:column;gap:6px;min-height:0}
+.pool-sec.collapsed .pool-body{display:none}
+.dz{border:1.5px dashed #d0cfc8;border-radius:8px;padding:9px;text-align:center;cursor:pointer;position:relative;transition:background .15s}
+.dz:hover,.dz.over{background:#f5f4f0;border-color:#aaa}
+.dz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz p{font-size:11px;color:#bbb}
+.import-hint{font-size:10px;color:#999;line-height:1.4}
+.pool-grid{display:flex;flex-wrap:wrap;gap:5px;align-content:flex-start;max-height:clamp(108px,22vh,190px);overflow-y:auto;padding-right:2px}
+.pool-grid::-webkit-scrollbar{width:8px}
+.pool-grid::-webkit-scrollbar-thumb{background:#d6d3cb;border-radius:999px}
+.pool-grid::-webkit-scrollbar-track{background:transparent}
+.pi{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px;border:1px solid #e8e7e0;border-radius:6px;cursor:grab;user-select:none;background:#fafaf8}
+.pi:hover{border-color:#bbb;background:#f0efe8}
+.pi.drag{opacity:.35}
+.pi canvas{display:block;width:auto;height:auto;max-width:28px;max-height:28px;image-rendering:pixelated}
+.pi span{font-size:8px;color:#aaa;max-width:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pirm{position:absolute;top:-5px;right:-5px;width:15px;height:15px;border:none;border-radius:50%;background:#fee2e2;color:#dc2626;font-size:11px;line-height:15px;text-align:center;cursor:pointer;display:none}
+.pi:hover .pirm{display:block}
+.picolor{position:absolute;top:3px;left:3px;width:15px;height:15px;border:1px solid #d7d5cf;border-radius:50%;background:#fff;cursor:pointer;display:block;box-shadow:0 1px 3px rgba(0,0,0,.12);opacity:.82}
+.pi:hover .picolor,.pi.has-color .picolor{opacity:1}
+.picolor::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--icon-color,conic-gradient(#ef4444,#f59e0b,#22c55e,#3b82f6,#a855f7,#ef4444));border:1px solid rgba(0,0,0,.08)}
+.pi.has-color .picolor{border-color:#999}
+.color-pop{position:absolute;left:-3px;top:17px;z-index:5;width:184px;padding:9px;border:1px solid #dedbd2;border-radius:8px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.16);display:flex;flex-direction:column;gap:7px;cursor:default}
+.color-pop-title{font-size:10px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.06em}
+.color-pop-row{display:flex;align-items:center;gap:6px}
+.color-pop-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.color-pop label{font-size:9px;color:#999}
+.color-pop input[type=color]{width:100%;height:28px;border:1px solid #ddd;border-radius:5px;background:#fff;padding:1px;cursor:pointer}
+.color-pop select{height:26px;flex:1;border:1px solid #ddd;border-radius:5px;background:#fff;color:#333;font-size:10px;padding:0 4px}
+.color-pop button{height:24px;flex:1;border:1px solid #ddd;border-radius:5px;background:#fff;color:#333;font-size:10px;cursor:pointer}
+.color-pop button:hover{background:#f5f4f0}
+.color-pop .reset{color:#b91c1c;border-color:#f1d4d4}
+.color-pop .pick-map{width:100%;flex:none;color:#166534;border-color:#bbdfc6;background:#f5fbf6}
+body.map-color-pick #map canvas{cursor:crosshair!important}
+.grp-sec{flex:1;overflow-y:auto;padding:10px 14px}
+.gc{border:1px solid #e2e0d8;border-radius:10px;margin-bottom:10px;overflow:hidden;background:#fafaf8}
+.gh{display:flex;align-items:center;gap:5px;padding:7px 10px;background:#f5f4f0;border-bottom:1px solid #e2e0d8;min-width:0}
+.badge{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-weight:500}
+.bs{background:#dbeafe;color:#1d4ed8}
+.bp{background:#dcfce7;color:#166534}
+.gmode{font-size:10px;padding:2px 7px;border:none;border-radius:20px;white-space:nowrap;flex-shrink:0;font-weight:500;cursor:pointer;outline:none}
+.gmode.bs{background:#dbeafe;color:#1d4ed8}
+.gmode.bp{background:#dcfce7;color:#166534}
+.gvis{width:26px;height:24px;border:1px solid #ddd;border-radius:5px;background:#fff;color:#444;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
+.gvis:hover{background:#f5f4f0}
+.gvis.off{color:#aaa;background:#f5f4f0}
+.gvis svg{display:block;width:16px;height:16px}
+.gopt{height:24px;border:1px solid #ddd;border-radius:5px;background:#fff;color:#555;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0 8px;font-size:10px;font-weight:600}
+.gopt:hover{background:#f5f4f0}
+.gopt.on{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8}
+.gord{width:24px;height:24px;border:1px solid #ddd;border-radius:5px;background:#fff;color:#555;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;font-size:12px;line-height:1}
+.gord:hover{background:#f5f4f0}
+.gord:disabled{opacity:.4;cursor:default;background:#f8f8f6}
+.gsrc{font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#fff;color:#333;cursor:pointer;min-width:92px;max-width:145px;flex:0 1 130px}
+.gtype,.gsubtype{font-size:11px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#fff;color:#333;min-width:70px;max-width:110px;flex:0 1 96px}
+.gname{font-size:11px;font-weight:500;color:#1a1a18;flex:1 1 50px;border:none;background:transparent;outline:none;min-width:0}
+.gopts-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:7px 10px;background:#fafaf8;border-bottom:1px solid #e8e7e0}
+.gopts-row:empty{display:none}
+.gh-lineopts{display:flex;align-items:center;gap:7px;padding:0;flex-wrap:wrap}
+.gh-lineopt{display:flex;align-items:center;gap:4px}
+.gh-lineopt label{font-size:9px;color:#aaa;width:auto;min-width:28px;text-align:right;flex-shrink:0}
+.gh-lineopt input{width:66px;min-width:0;font-size:10px;padding:2px 4px;border:1px solid #ddd;border-radius:4px;background:#fff;color:#333;text-align:center}
+.grm{font-size:10px;padding:2px 7px;border:1px solid #e0d0d0;border-radius:5px;background:transparent;color:#c00;cursor:pointer;flex-shrink:0;margin-left:auto}
+.grm:hover{background:#fff0f0}
+.sh{display:grid;grid-template-columns:repeat(3,1fr);background:#f0efe8;border-bottom:1px solid #e2e0d8}
+.sh-col{padding:4px 3px;font-size:9px;font-weight:600;color:#aaa;text-align:center;text-transform:uppercase;letter-spacing:.04em;border-right:1px solid #e2e0d8}
+.sh-col:last-child{border-right:none}
+.sb{display:grid;grid-template-columns:repeat(3,1fr)}
+.sl{padding:6px 4px;border-right:1px solid #e8e7e0;display:flex;flex-direction:column;align-items:center;gap:3px;overflow:hidden}
+.sl:last-child{border-right:none}
+.sl.over{background:#dbeafe}
+.sfs{display:flex;flex-direction:column;gap:3px;width:100%}
+.sf{display:flex;align-items:center;gap:3px}
+.sf label{font-size:9px;color:#aaa;width:38px;text-align:right;flex-shrink:0}
+.sf input{flex:1;min-width:0;font-size:10px;padding:2px 4px;border:1px solid #ddd;border-radius:4px;background:#fff;color:#333;text-align:center}
+.sf .u{font-size:9px;color:#ccc}
+.siw{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:3px}
+.siw canvas{display:block;width:auto;height:auto;max-width:30px;max-height:30px;image-rendering:pixelated;border-radius:4px}
+.siw span{font-size:8px;color:#888;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sirm{position:absolute;top:-4px;right:-4px;width:13px;height:13px;border-radius:50%;background:#fee2e2;color:#dc2626;font-size:9px;line-height:13px;text-align:center;cursor:pointer;display:none}
+.siw:hover .sirm{display:block}
+.semp{font-size:9px;color:#ccc;text-align:center;padding:6px 3px;border:1px dashed #ddd;border-radius:5px;width:100%;margin-top:3px}
+.add-row{padding:6px 14px 10px;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.btn{font-size:11px;padding:6px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;color:#333;cursor:pointer;white-space:nowrap;transition:background .12s}
+.btn:hover{background:#f5f4f0}
+.btn-p{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.btn-p:hover{background:#333}
+.bot{padding:8px 14px;border-top:1px solid #e2e0d8;display:flex;gap:6px;flex-shrink:0}
+.st{padding:5px 14px;font-size:11px;color:#999;border-top:1px solid #f0efe8;min-height:26px;flex-shrink:0}
+.st.err{color:#dc2626}
+.st.ok{color:#16a34a}
+.code-wrap{flex:1;overflow:auto;padding:12px;background:#f8f7f4}
+pre{font-family:'Menlo','Monaco',monospace;font-size:10px;color:#333;white-space:pre;line-height:1.65}
+.map-area{position:relative;min-width:0}
+#map{width:100%;height:100%}
+#zi{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);padding:5px 11px;border-radius:5px;font-size:13px;box-shadow:0 1px 5px rgba(0,0,0,.18);z-index:1;color:#333}
+#map-search{position:absolute;top:52px;left:12px;display:flex;gap:6px;align-items:center;z-index:1;background:rgba(255,255,255,.95);padding:7px 8px;border-radius:8px;box-shadow:0 1px 5px rgba(0,0,0,.15)}
+#map-search input{width:210px;height:30px;border:1px solid #ddd;border-radius:6px;padding:0 10px;font-size:12px;color:#333;background:#fff}
+#map-search button{height:30px;border:1px solid #ddd;border-radius:6px;background:#fff;padding:0 10px;font-size:11px;color:#333;cursor:pointer}
+#map-search button:hover{background:#f5f4f0}
+#map-tools{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:6px;z-index:1}
+#map-tools button{background:rgba(255,255,255,.94);padding:7px 11px;border:1px solid #ddd;border-radius:6px;font-size:11px;box-shadow:0 1px 5px rgba(0,0,0,.15);color:#333;cursor:pointer;text-align:left}
+#map-tools button:hover{background:#fff}
+#map-tools button.off{background:rgba(245,245,244,.96);color:#888}
+#inspect-panel{position:absolute;right:12px;bottom:24px;max-width:340px;max-height:40vh;overflow:auto;background:rgba(255,255,255,.96);padding:10px 12px;border-radius:8px;font-size:11px;box-shadow:0 1px 5px rgba(0,0,0,.15);z-index:1;color:#333;display:none}
+.inspect-title{font-size:10px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.inspect-row{margin-bottom:6px;line-height:1.45}
+.inspect-row:last-child{margin-bottom:0}
+.inspect-muted{color:#777}
+.inspect-code{font-family:'Menlo','Monaco',monospace;font-size:10px;word-break:break-word}
+#legend{position:absolute;bottom:24px;left:12px;max-width:240px;background:rgba(255,255,255,.95);padding:10px 12px;border-radius:8px;font-size:11px;box-shadow:0 1px 5px rgba(0,0,0,.15);z-index:1;color:#333;display:none}
+.legend-title{font-size:10px;font-weight:600;color:#777;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.legend-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.legend-row:last-child{margin-bottom:0}
+.legend-swatch{width:30px;height:24px;border:1px solid #d7d5cf;border-radius:5px;background:#f8f7f4;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.legend-swatch canvas{display:block;max-width:26px;max-height:20px;width:auto;height:auto;image-rendering:pixelated}
+.legend-meta{min-width:0}
+.legend-name{font-size:11px;font-weight:600;color:#1a1a18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legend-filter{font-size:10px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-height:820px){
+  .pool-grid{max-height:120px}
+  .dz{padding:7px}
+  .import-hint{font-size:9px}
+}
+@media (max-height:720px){
+  .pool-grid{max-height:84px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <div class="hdr">
+      <h1>Sprite Builder</h1>
+      <div class="base-row">
+        <select class="base-sel" id="basemap-select"></select>
+        <button class="btn" type="button" id="basemap-apply">Load Basemap</button>
+      </div>
+      <p class="base-help" id="basemap-help"></p>
+    </div>
+    <div class="tabs">
+      <div class="tab on" onclick="switchTab('groups')">Groups</div>
+      <div class="tab" onclick="switchTab('code')">Code</div>
+    </div>
+    <div class="panel on" id="pan-groups">
+      <div class="pool-sec" id="pool-sec">
+        <div class="sec-lbl">
+          <span id="pool-label">Icon Pool</span>
+          <div class="pool-head-controls">
+            <button class="btn pool-toggle" id="pool-toggle" type="button">Collapse</button>
+            <button class="btn" style="font-size:10px;padding:3px 8px" title="Please select sprite.png and sprite.json together" onclick="document.getElementById('fij').click()">Load Sprite + JSON</button>
+            <button class="btn" style="font-size:10px;padding:3px 8px" onclick="document.getElementById('fi').click()">+ PNGs</button>
+            <button class="btn" style="font-size:10px;padding:3px 8px" onclick="clearAllSymbolsAndPatterns()">Clear All</button>
+          </div>
+          <input type="file" id="fi" accept=".png,image/png" multiple style="display:none" onchange="onFiles(this.files)">
+          <input type="file" id="fij" accept=".png,.json,image/png,application/json" multiple style="display:none" onchange="importSavedSprite(this.files);this.value=''">
+        </div>
+        <div class="pool-body" id="pool-body">
+          <div class="dz" id="dz"><input type="file" accept=".png,image/png" multiple onchange="onFiles(this.files)"><p>Drop PNGs here or click to upload</p></div>
+          <p class="import-hint">For sprite import, please select <strong>sprite.png</strong> and <strong>sprite.json</strong> together.</p>
+          <div class="pool-grid" id="pg"></div>
+        </div>
+      </div>
+      <div class="grp-sec" id="gs"></div>
+      <div class="add-row">
+        <button class="btn" style="flex:1" onclick="addGroup('symbol')">+ Symbol Group</button>
+        <button class="btn" style="flex:1" onclick="addGroup('pattern')">+ Pattern Group</button>
+        <button class="btn" style="flex:1" onclick="addGroup('linepattern')">+ Line Pattern Group</button>
+        <button class="btn" style="flex:1" onclick="addGroup('edgepoints')">+ Forest Edge Group</button>
+      </div>
+      <div class="bot">
+        <button class="btn btn-p" style="flex:1" onclick="build()">Build + Load Sprite</button>
+        <button class="btn" id="dp" onclick="dlPng()" disabled>&darr; .png</button>
+        <button class="btn" id="dj" onclick="dlJson()" disabled>&darr; .json</button>
+        <button class="btn" id="dp2" onclick="dlPng2x()" disabled>&darr; @2x.png</button>
+        <button class="btn" id="dj2" onclick="dlJson2x()" disabled>&darr; @2x.json</button>
+      </div>
+      <div class="st" id="st">Ready - upload PNGs and configure groups</div>
+    </div>
+    <div class="panel" id="pan-code"><div class="code-wrap"><pre id="co">// Sprite not built yet</pre></div></div>
+  </div>
+  <div class="sidebar-resize" id="sidebar-resize" title="Resize sidebar"></div>
+  <div class="map-area">
+    <div id="map"></div>
+    <div id="zi">Zoom: --</div>
+    <div id="map-search">
+      <input id="city-search-input" type="search" placeholder="Search for a city" aria-label="Search for a city">
+      <button id="city-search-btn" type="button">Search</button>
+    </div>
+    <div id="map-tools">
+      <button id="native-poi-toggle" type="button">Basemap Symbols: on</button>
+      <button id="native-area-toggle" type="button">Basemap Areas: on</button>
+      <button id="inspect-toggle" type="button">Inspector: off</button>
+    </div>
+    <div id="legend"></div>
+    <div id="inspect-panel"></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.22.0/dist/maplibre-gl.js"></script>
+<script>
+const APP_ORIGIN='http://localhost:8080';
+const BASEMAPS={
+  openfreemap:{
+    label:'OpenFreeMap Liberty',
+    styleName:'OpenFreeMap Liberty',
+    attribution:'OpenFreeMap © OpenMapTiles Data from OpenStreetMap',
+    help:'Balanced default style with moderate colors.',
+    styleUrl:()=> 'https://tiles.openfreemap.org/styles/liberty'
+  },
+  openfreemapPositron:{
+    label:'OpenFreeMap Positron',
+    styleName:'OpenFreeMap Positron',
+    attribution:'OpenFreeMap © OpenMapTiles Data from OpenStreetMap',
+    help:'Very light, low-saturation basemap that stays further in the background.',
+    styleUrl:()=> 'https://tiles.openfreemap.org/styles/positron'
+  },
+  osmBright:{
+    label:'OSM Bright',
+    styleName:'OSM Bright',
+    attribution:'OpenFreeMap © OpenMapTiles Data from OpenStreetMap',
+    help:'Bright style based on the OpenMapTiles OSM Bright design.',
+    styleUrl:()=> 'https://tiles.openfreemap.org/styles/bright'
+  }
+};
+const SPRITE_URL=APP_ORIGIN+'/sprite/sprite';
+const SPRITE_UPLOAD_URL=APP_ORIGIN+'/api/sprite';
+const APP_STATE_KEY='sprite-builder-map-libre-v1';
+const DEFAULT_SIDEBAR_WIDTH=480;
+const MIN_SIDEBAR_WIDTH=360;
+const MAX_SIDEBAR_WIDTH=900;
+const VECTOR_SOURCE_HINTS=['openfreemap','openmaptiles','maplibre','planet'];
+const NATIVE_POI_SOURCE_LAYERS=new Set(['poi','aerodrome_label']);
+const INSPECTOR_HIT_RADIUS=8;
+const NATIVE_POI_LABEL_MIN_OFFSET=0.25;
+const NATIVE_POI_LABEL_MAX_OFFSET=4.2;
+const NATIVE_POI_LABEL_BASE_TEXT_PX=12;
+const NATIVE_POI_LABEL_HEIGHT_FACTOR=0.55;
+const NATIVE_POI_LABEL_GAP_PX=1.5;
+const PATTERN_INTERPOLATION_SAMPLES=6;
+const CUSTOM_GEOJSON_SOURCES={
+  trees_vienna:{
+    id:'trees-vienna',
+    url:APP_ORIGIN+'/export_trees_vienna.geojson',
+    dataLabel:'Vienna Trees',
+    defaultTypeValue:'tree'
+  },
+  trees_innsbruck:{
+    id:'trees-innsbruck',
+    url:APP_ORIGIN+'/osm_tree_innsbruck.geojson',
+    dataLabel:'Innsbruck Trees',
+    defaultTypeValue:'tree'
+  },
+  benches_vienna:{
+    id:'benches-vienna',
+    url:APP_ORIGIN+'/osm_bench_vienna.geojson',
+    dataLabel:'Vienna Benches',
+    defaultTypeValue:'bench'
+  }
+};
+
+const SRCS = {
+  'poi_label': {
+    lbl:'POIs (poi)',
+    pt:true,
+    source:'openfreemap-vector',
+    sourceLayer:'poi',
+    typeField:'class',
+    subtypeField:'subclass',
+    defaultTypeValue:'school',
+    defaultSubtypeValue:'',
+    beforeId:null
+  },
+  'natural': {
+    lbl:'Landcover (landcover)',
+    pt:false,
+    source:'openfreemap-vector',
+    sourceLayer:'landcover',
+    typeField:'class',
+    subtypeField:'subclass',
+    defaultTypeValue:'wood',
+    defaultSubtypeValue:'',
+    beforeId:null,
+    beforeIdCandidates:['water','waterway','transportation','building','housenumber'],
+    beforeSourceLayers:['water','waterway','water_name','waterway_name','transportation','transportation_name','aeroway','building','housenumber','poi']
+  },
+  'landuse': {
+    lbl:'Landuse (landuse)',
+    pt:false,
+    source:'openfreemap-vector',
+    sourceLayer:'landuse',
+    typeField:'class',
+    subtypeField:'subclass',
+    defaultTypeValue:'park',
+    defaultSubtypeValue:'',
+    beforeId:null,
+    beforeIdCandidates:['water','waterway','transportation','building','housenumber'],
+    beforeSourceLayers:['water','waterway','water_name','waterway_name','transportation','transportation_name','aeroway','building','housenumber','poi']
+  },
+  'water': {
+    lbl:'Water (water)',
+    pt:false,
+    source:'openfreemap-vector',
+    sourceLayer:'water',
+    typeField:'class',
+    subtypeField:'subclass',
+    defaultTypeValue:'lake',
+    defaultSubtypeValue:'',
+    beforeId:null,
+    beforeIdCandidates:['transportation','building','housenumber'],
+    beforeSourceLayers:['water_name','waterway_name','transportation','transportation_name','aeroway','building','housenumber','poi']
+  },
+  'trees_vienna': {
+    lbl:'Vienna Trees (GeoJSON)',
+    pt:true,
+    source:CUSTOM_GEOJSON_SOURCES.trees_vienna.id,
+    sourceLayer:null,
+    typeField:'natural',
+    subtypeField:'',
+    defaultTypeValue:CUSTOM_GEOJSON_SOURCES.trees_vienna.defaultTypeValue,
+    defaultSubtypeValue:'',
+    beforeId:null,
+    drawBelowLabels:true
+  },
+  'trees_innsbruck': {
+    lbl:'Innsbruck Trees (GeoJSON)',
+    pt:true,
+    source:CUSTOM_GEOJSON_SOURCES.trees_innsbruck.id,
+    sourceLayer:null,
+    typeField:'natural',
+    subtypeField:'',
+    defaultTypeValue:CUSTOM_GEOJSON_SOURCES.trees_innsbruck.defaultTypeValue,
+    defaultSubtypeValue:'',
+    beforeId:null,
+    drawBelowLabels:true
+  },
+  'benches_vienna': {
+    lbl:'Vienna Benches (GeoJSON)',
+    pt:true,
+    source:CUSTOM_GEOJSON_SOURCES.benches_vienna.id,
+    sourceLayer:null,
+    typeField:'amenity',
+    subtypeField:'',
+    defaultTypeValue:CUSTOM_GEOJSON_SOURCES.benches_vienna.defaultTypeValue,
+    defaultSubtypeValue:'',
+    beforeId:null,
+    drawBelowLabels:true
+  }
+};
+
+const AERODROME_LABEL_CLASSES=new Set(['international','public','regional','military','private','other']);
+const AERODROME_LABEL_ALIASES=new Set(['aerodrome_label','airport','aerodrome']);
+const AERODROME_LABEL_META={
+  lbl:'Flughaefen (aerodrome_label)',
+  pt:true,
+  source:'openfreemap-vector',
+  sourceLayer:'aerodrome_label',
+  typeField:'class',
+  defaultTypeValue:'public',
+  defaultSubtypeValue:'',
+  beforeId:null
+};
+
+let pool={}, groups=[], pngBlob=null, png2xBlob=null, spritePngDataUrl='', sprite2xPngDataUrl='', jsonOut=null, json2xOut=null, ready=false, dragged=null, active=[], legendState=[], sidebarWidth=DEFAULT_SIDEBAR_WIDTH;
+let nativePoiIconOpacityState={};
+let nativePoiTextLayoutState={};
+let activeBasemapId='openfreemap', nativePoiVisible=true, nativeAreaVisible=true, inspectorEnabled=false, poolCollapsed=false, appStateRestored=false, basemapControlsBound=false;
+let generatedVariantImageNames=[];
+let activeGeneratedSourceIds=[], edgePointRenderers=[], patternFadeRenderers=[];
+let pendingMapColorPick=null;
+
+function ss(m,t){const e=document.getElementById('st');e.textContent=m;e.className='st'+(t?' '+t:'');}
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',(t==='groups'&&i===0)||(t==='code'&&i===1)));
+  document.getElementById('pan-groups').classList.toggle('on',t==='groups');
+  document.getElementById('pan-code').classList.toggle('on',t==='code');
+}
+
+function renderPoolSection(){
+  const section=document.getElementById('pool-sec');
+  const label=document.getElementById('pool-label');
+  const toggle=document.getElementById('pool-toggle');
+  const poolCount=Object.keys(pool).length;
+  if(label) label.textContent='Icon Pool ('+poolCount+')';
+  if(section) section.classList.toggle('collapsed',poolCollapsed);
+  if(!toggle) return;
+  toggle.textContent=poolCollapsed?'Expand':'Collapse';
+  toggle.classList.toggle('off',poolCollapsed);
+  toggle.title=poolCollapsed?'Show icon pool again':'Collapse icon pool';
+}
+
+function bindPoolToggle(){
+  const btn=document.getElementById('pool-toggle');
+  if(!btn||btn.dataset.bound==='1') return;
+  btn.dataset.bound='1';
+  btn.addEventListener('click',()=>{
+    poolCollapsed=!poolCollapsed;
+    renderPoolSection();
+    persistState();
+  });
+}
+
+function getPersistedAppState(){
+  try{
+    const raw=localStorage.getItem(APP_STATE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){
+    console.warn('localStorage read failed',e);
+    return null;
+  }
+}
+
+function normalizeBasemapId(id){
+  return BASEMAPS[id] ? id : 'openfreemap';
+}
+
+function currentBasemapConfig(){
+  return BASEMAPS[normalizeBasemapId(activeBasemapId)];
+}
+
+function currentBasemapStyleUrl(){
+  return currentBasemapConfig().styleUrl();
+}
+
+function applyBasemapLayerTweaks(){
+  const basemap=currentBasemapConfig();
+  if(typeof map==='undefined'||!map) return;
+
+  if(basemap.disable3d){
+    const style=map.getStyle();
+    const layers=style&&Array.isArray(style.layers)?style.layers:[];
+    layers.forEach(layer=>{
+      if(!layer||!layer.id) return;
+      if(layer.type==='fill-extrusion'||layer.type==='model'){
+        try{
+          if(map.getLayer(layer.id)) map.setLayoutProperty(layer.id,'visibility','none');
+        }catch(e){
+          console.warn('3D layer suppression failed for',layer.id,e);
+        }
+      }
+    });
+    try{
+      if(map.getTerrain()) map.setTerrain(null);
+    }catch(e){
+      console.warn('Terrain reset failed',e);
+    }
+  }
+}
+
+function renderNativePoiToggle(){
+  const btn=document.getElementById('native-poi-toggle');
+  if(!btn) return;
+  btn.textContent='Basemap Symbols: '+(nativePoiVisible?'on':'off');
+  btn.classList.toggle('off',!nativePoiVisible);
+  btn.title=nativePoiVisible
+    ? 'Hide native POI symbols while keeping labels visible'
+    : 'Show native POI symbols again';
+}
+
+function isCustomOverlayLayerId(id){
+  return typeof id==='string' && (id.startsWith('sym-')||id.startsWith('pat-')||id.startsWith('linepat-')||id.startsWith('edge-'));
+}
+
+function renderNativeAreaToggle(){
+  const btn=document.getElementById('native-area-toggle');
+  if(!btn) return;
+  btn.textContent='Basemap Areas: '+(nativeAreaVisible?'on':'off');
+  btn.classList.toggle('off',!nativeAreaVisible);
+  btn.title=nativeAreaVisible
+    ? 'Hide native basemap area layers'
+    : 'Show native basemap area layers';
+}
+
+function nativePoiLayerIds(){
+  const style=map&&map.getStyle?map.getStyle():null;
+  const layers=style&&Array.isArray(style.layers)?style.layers:[];
+  return layers
+    .filter(layer=>
+      layer &&
+      layer.type==='symbol' &&
+      !isCustomOverlayLayerId(layer.id) &&
+      NATIVE_POI_SOURCE_LAYERS.has(layer['source-layer'])
+    )
+    .map(layer=>layer.id);
+}
+
+function nativePoiIconOpacityForLayer(id){
+  if(Object.prototype.hasOwnProperty.call(nativePoiIconOpacityState,id)){
+    return nativePoiIconOpacityState[id];
+  }
+  let currentOpacity=1;
+  try{
+    const value=map.getPaintProperty(id,'icon-opacity');
+    currentOpacity=(typeof value==='undefined') ? 1 : value;
+  }catch(e){
+    console.warn('Native icon opacity read failed for layer',id,e);
+  }
+  nativePoiIconOpacityState[id]=currentOpacity;
+  return currentOpacity;
+}
+
+function nativePoiTextLayoutForLayer(id){
+  if(Object.prototype.hasOwnProperty.call(nativePoiTextLayoutState,id)){
+    return nativePoiTextLayoutState[id];
+  }
+  const state={};
+  ['text-field','text-anchor','text-offset','text-variable-anchor','text-radial-offset'].forEach(prop=>{
+    try{
+      const value=map.getLayoutProperty(id,prop);
+      state[prop]={
+        hasValue:typeof value!=='undefined',
+        value
+      };
+    }catch(e){
+      console.warn('Native text layout read failed for layer',id,prop,e);
+      state[prop]={hasValue:false,value:undefined};
+    }
+  });
+  nativePoiTextLayoutState[id]=state;
+  return state;
+}
+
+function clamp(v,min,max){
+  return Math.min(max,Math.max(min,v));
+}
+
+function isAreaGroupType(type){
+  return type==='pattern'||type==='linepattern'||type==='edgepoints';
+}
+
+function defaultSizeForGroupType(type){
+  if(type==='symbol') return 24;
+  if(type==='edgepoints') return 22;
+  if(type==='linepattern') return 32;
+  return 64;
+}
+
+function defaultGroupNameForType(type){
+  if(type==='linepattern') return 'Line Patterns';
+  if(type==='edgepoints') return 'Forest Edge';
+  return type==='symbol' ? 'Symbols' : 'Patterns';
+}
+
+function defaultOpacityForType(type){
+  if(type==='pattern') return 0.58;
+  if(type==='edgepoints') return 0.96;
+  return 1;
+}
+
+function normalizedOpacity(group){
+  const fallback=defaultOpacityForType(group&&group.type);
+  const raw=Number(group&&group.opacity);
+  if(!Number.isFinite(raw)) return fallback;
+  return clamp(raw,0,1);
+}
+
+function defaultLineGapPx(){
+  return Math.round(defaultSizeForGroupType('linepattern')*1.4);
+}
+
+function normalizedLineGapPx(group){
+  const raw=Number(group&&group.lineGapPx);
+  if(!Number.isFinite(raw)) return defaultLineGapPx();
+  return Math.max(0,Math.round(raw));
+}
+
+function defaultLineHeightScale(){
+  return 0.82;
+}
+
+function normalizedLineHeightScale(group){
+  const raw=Number(group&&group.lineHeightScale);
+  if(!Number.isFinite(raw)) return defaultLineHeightScale();
+  return clamp(raw,0.2,2);
+}
+
+function defaultLineOrganic(){
+  return true;
+}
+
+function normalizedLineOrganic(group){
+  return group&&typeof group.lineOrganic==='boolean' ? group.lineOrganic===true : defaultLineOrganic();
+}
+
+function defaultPatternFadeEnabled(){
+  return false;
+}
+
+function normalizedPatternFadeEnabled(group){
+  return group&&typeof group.patternFadeEnabled==='boolean' ? group.patternFadeEnabled===true : defaultPatternFadeEnabled();
+}
+
+function defaultPatternFadeWidthPx(){
+  return 32;
+}
+
+function normalizedPatternFadeWidthPx(group){
+  const raw=Number(group&&group.patternFadeWidthPx);
+  if(!Number.isFinite(raw)) return defaultPatternFadeWidthPx();
+  return clamp(Math.round(raw),4,160);
+}
+
+function defaultPatternFadeOpacity(){
+  return 0.32;
+}
+
+function normalizedPatternFadeOpacity(group){
+  const raw=Number(group&&group.patternFadeOpacity);
+  if(!Number.isFinite(raw)) return defaultPatternFadeOpacity();
+  return clamp(raw,0,1);
+}
+
+function lineWidthValueForPx(px,group){
+  return Math.max(1,Math.round(Math.max(1,Number(px)||1)*normalizedLineHeightScale(group)));
+}
+
+function stableHash(str){
+  let hash=2166136261;
+  const input=String(str||'');
+  for(let i=0;i<input.length;i++){
+    hash^=input.charCodeAt(i);
+    hash=Math.imul(hash,16777619);
+  }
+  return hash>>>0;
+}
+
+function mulberry32(seed){
+  let t=seed>>>0;
+  return function(){
+    t+=0x6D2B79F5;
+    let r=Math.imul(t^(t>>>15),t|1);
+    r^=r+Math.imul(r^(r>>>7),r|61);
+    return ((r^(r>>>14))>>>0)/4294967296;
+  };
+}
+
+function cloneCanvas(src){
+  if(!src) return null;
+  const c=document.createElement('canvas');
+  c.width=src.width;
+  c.height=src.height;
+  c.getContext('2d').drawImage(src,0,0);
+  return c;
+}
+
+function visibleCanvasMetrics(canvas){
+  if(!canvas||!canvas.width||!canvas.height) return {heightRatio:1,bottomFactor:0.5};
+  let minY=canvas.height;
+  let maxY=-1;
+  try{
+    const data=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
+    for(let y=0;y<canvas.height;y++){
+      for(let x=0;x<canvas.width;x++){
+        const alpha=data[((y*canvas.width)+x)*4+3];
+        if(alpha<8) continue;
+        if(y<minY) minY=y;
+        if(y>maxY) maxY=y;
+      }
+    }
+  }catch(e){
+    return {heightRatio:1,bottomFactor:0.5};
+  }
+  if(maxY<0) return {heightRatio:1,bottomFactor:0.5};
+  const visibleHeight=Math.max(1,(maxY-minY)+1);
+  return {
+    heightRatio:visibleHeight/canvas.height,
+    bottomFactor:Math.max(0.08,Math.min(0.5,((maxY+1)-(canvas.height/2))/canvas.height))
+  };
+}
+
+function enrichPoolItemMetrics(item){
+  if(!item||!item.canvas) return item;
+  const metrics=visibleCanvasMetrics(item.canvas);
+  item.visibleHeightRatio=metrics.heightRatio;
+  item.visibleBottomFactor=metrics.bottomFactor;
+  return item;
+}
+
+function loadCanvasFromDataUrl(dataUrl){
+  return new Promise(resolve=>{
+    if(!dataUrl){
+      resolve(null);
+      return;
+    }
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      c.width=img.naturalWidth;
+      c.height=img.naturalHeight;
+      c.getContext('2d').drawImage(img,0,0);
+      resolve(c);
+    };
+    img.onerror=()=>resolve(null);
+    img.src=dataUrl;
+  });
+}
+
+function normalizeHexColor(value){
+  const raw=String(value||'').trim();
+  if(/^#[0-9a-f]{6}$/i.test(raw)) return raw.toLowerCase();
+  if(/^#[0-9a-f]{3}$/i.test(raw)){
+    return '#'+raw.slice(1).split('').map(ch=>ch+ch).join('').toLowerCase();
+  }
+  return '#4f8f3a';
+}
+
+function hexToRgb(hex){
+  const value=normalizeHexColor(hex).slice(1);
+  return {
+    r:parseInt(value.slice(0,2),16),
+    g:parseInt(value.slice(2,4),16),
+    b:parseInt(value.slice(4,6),16)
+  };
+}
+
+function rgbToHex(r,g,b){
+  return '#'+[r,g,b].map(v=>Math.round(clamp(Number(v)||0,0,255)).toString(16).padStart(2,'0')).join('');
+}
+
+function colorStringToHex(value){
+  if(typeof value!=='string') return null;
+  const raw=value.trim();
+  if(/^#[0-9a-f]{3}$/i.test(raw)||/^#[0-9a-f]{6}$/i.test(raw)) return normalizeHexColor(raw);
+  const rgbMatch=raw.match(/^rgba?\(([^)]+)\)$/i);
+  if(rgbMatch){
+    const parts=rgbMatch[1].split(',').map(part=>Number(part.trim()));
+    if(parts.length>=3&&parts.slice(0,3).every(Number.isFinite)){
+      return rgbToHex(parts[0],parts[1],parts[2]);
+    }
+  }
+  const named={
+    white:'#ffffff',
+    black:'#000000',
+    grey:'#808080',
+    gray:'#808080',
+    green:'#008000',
+    blue:'#0000ff',
+    red:'#ff0000',
+    yellow:'#ffff00',
+    transparent:null
+  };
+  return Object.prototype.hasOwnProperty.call(named,raw.toLowerCase()) ? named[raw.toLowerCase()] : null;
+}
+
+function expressionColorFallback(value){
+  if(typeof value==='string') return colorStringToHex(value);
+  if(!Array.isArray(value)) return null;
+  for(let i=value.length-1;i>=0;i--){
+    const hex=expressionColorFallback(value[i]);
+    if(hex) return hex;
+  }
+  return null;
+}
+
+function rgbToHsl(r,g,b){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h=0, s=0;
+  const l=(max+min)/2;
+  if(max!==min){
+    const d=max-min;
+    s=l>0.5 ? d/(2-max-min) : d/(max+min);
+    if(max===r) h=(g-b)/d+(g<b?6:0);
+    else if(max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h/=6;
+  }
+  return {h,s,l};
+}
+
+function hslToRgb(h,s,l){
+  function hue2rgb(p,q,t){
+    if(t<0) t+=1;
+    if(t>1) t-=1;
+    if(t<1/6) return p+(q-p)*6*t;
+    if(t<1/2) return q;
+    if(t<2/3) return p+(q-p)*(2/3-t)*6;
+    return p;
+  }
+  let r,g,b;
+  if(s===0){
+    r=g=b=l;
+  }else{
+    const q=l<0.5 ? l*(1+s) : l+s-(l*s);
+    const p=(2*l)-q;
+    r=hue2rgb(p,q,h+1/3);
+    g=hue2rgb(p,q,h);
+    b=hue2rgb(p,q,h-1/3);
+  }
+  return {r:Math.round(r*255),g:Math.round(g*255),b:Math.round(b*255)};
+}
+
+function normalizedIconColorConfig(config){
+  if(!config||typeof config!=='object'||config.enabled===false) return null;
+  const mode=['tint','hue','mono'].includes(config.mode) ? config.mode : 'tint';
+  return {enabled:true,mode,hex:normalizeHexColor(config.hex)};
+}
+
+function recolorCanvas(srcCanvas,colorConfig){
+  const cfg=normalizedIconColorConfig(colorConfig);
+  if(!srcCanvas||!cfg) return cloneCanvas(srcCanvas);
+  const target=hexToRgb(cfg.hex);
+  const targetHsl=rgbToHsl(target.r,target.g,target.b);
+  const c=cloneCanvas(srcCanvas);
+  const ctx=c.getContext('2d');
+  const image=ctx.getImageData(0,0,c.width,c.height);
+  const data=image.data;
+  for(let i=0;i<data.length;i+=4){
+    const a=data[i+3];
+    if(!a) continue;
+    const r=data[i], g=data[i+1], b=data[i+2];
+    const lum=(0.2126*r+0.7152*g+0.0722*b)/255;
+    if(cfg.mode==='mono'){
+      data[i]=target.r;
+      data[i+1]=target.g;
+      data[i+2]=target.b;
+    }else if(cfg.mode==='hue'){
+      const hsl=rgbToHsl(r,g,b);
+      const rgb=hslToRgb(targetHsl.h,Math.max(hsl.s,targetHsl.s*0.65),hsl.l);
+      data[i]=rgb.r;
+      data[i+1]=rgb.g;
+      data[i+2]=rgb.b;
+    }else{
+      const shade=clamp(0.32+(lum*0.95),0.16,1.18);
+      data[i]=Math.round(clamp(target.r*shade,0,255));
+      data[i+1]=Math.round(clamp(target.g*shade,0,255));
+      data[i+2]=Math.round(clamp(target.b*shade,0,255));
+    }
+  }
+  ctx.putImageData(image,0,0);
+  return c;
+}
+
+function applyIconColor(name,colorConfig){
+  const item=pool[name];
+  if(!item) return;
+  if(!item.originalCanvas) item.originalCanvas=cloneCanvas(item.canvas);
+  if(!item.originalDataUrl) item.originalDataUrl=item.dataUrl;
+  const cfg=normalizedIconColorConfig(colorConfig);
+  item.color=cfg;
+  item.canvas=cfg ? recolorCanvas(item.originalCanvas,cfg) : cloneCanvas(item.originalCanvas);
+  item.w=item.canvas.width;
+  item.h=item.canvas.height;
+  item.dataUrl=cfg ? item.canvas.toDataURL('image/png') : item.originalDataUrl;
+  enrichPoolItemMetrics(item);
+}
+
+function resetIconColor(name){
+  applyIconColor(name,null);
+  if(pool[name]) pool[name].color=null;
+}
+
+function beginMapColorPick(name,mode){
+  if(!pool[name]) return;
+  pendingMapColorPick={name,mode:['tint','hue','mono'].includes(mode)?mode:'tint'};
+  document.body.classList.add('map-color-pick');
+  closeColorPopovers();
+  ss('Colour picker active | Click a map area to sample its colour','ok');
+}
+
+function mapGlContext(){
+  if(typeof map==='undefined'||!map) return null;
+  return (map.painter&&map.painter.context&&map.painter.context.gl) ||
+    (map._context&&map._context.gl) ||
+    (map.getCanvas&&map.getCanvas().getContext('webgl2')) ||
+    (map.getCanvas&&map.getCanvas().getContext('webgl')) ||
+    null;
+}
+
+function readMapPixel(gl,canvas,point,dx,dy){
+  const bufferW=gl.drawingBufferWidth||canvas.width;
+  const bufferH=gl.drawingBufferHeight||canvas.height;
+  const scaleX=bufferW/canvas.clientWidth;
+  const scaleY=bufferH/canvas.clientHeight;
+  const x=clamp(Math.round(point.x*scaleX)+dx,0,bufferW-1);
+  const y=clamp(Math.round((canvas.clientHeight-point.y)*scaleY)+dy,0,bufferH-1);
+  const pixel=new Uint8Array(4);
+  gl.readPixels(x,y,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);
+  return pixel;
+}
+
+function sampleMapColorAtPoint(point){
+  if(typeof map==='undefined'||!map||!point) return null;
+  const canvas=map.getCanvas();
+  const gl=mapGlContext();
+  if(!gl) return null;
+
+  const offsets=[
+    [0,0],[-1,0],[1,0],[0,-1],[0,1],
+    [-2,0],[2,0],[0,-2],[0,2],[-1,-1],[1,-1],[-1,1],[1,1]
+  ];
+  const sum={r:0,g:0,b:0,count:0};
+  let previousFramebuffer=null;
+  try{
+    previousFramebuffer=gl.getParameter(gl.FRAMEBUFFER_BINDING);
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    offsets.forEach(([dx,dy])=>{
+      const pixel=readMapPixel(gl,canvas,point,dx,dy);
+      if(pixel[3]===0) return;
+      sum.r+=pixel[0];
+      sum.g+=pixel[1];
+      sum.b+=pixel[2];
+      sum.count++;
+    });
+    gl.bindFramebuffer(gl.FRAMEBUFFER,previousFramebuffer);
+  }catch(e){
+    try{gl.bindFramebuffer(gl.FRAMEBUFFER,previousFramebuffer);}catch(_err){}
+    console.warn('Map colour sampling failed',e);
+    return null;
+  }
+  if(!sum.count) return null;
+  return rgbToHex(sum.r/sum.count,sum.g/sum.count,sum.b/sum.count);
+}
+
+function styleColorAtPoint(point){
+  if(typeof map==='undefined'||!map||!point) return null;
+  let features=[];
+  try{
+    features=map.queryRenderedFeatures(point).filter(feature=>!isCustomOverlayLayerId((feature.layer||{}).id));
+  }catch(e){
+    console.warn('Rendered feature colour query failed',e);
+  }
+  const paintKeysByType={
+    fill:['fill-color','fill-outline-color'],
+    background:['background-color'],
+    line:['line-color'],
+    circle:['circle-color'],
+    symbol:['icon-color','text-color'],
+    raster:['raster-opacity']
+  };
+  for(const feature of features){
+    const layer=feature&&feature.layer;
+    if(!layer||!map.getLayer(layer.id)) continue;
+    const keys=paintKeysByType[layer.type]||[];
+    for(const key of keys){
+      if(key==='raster-opacity') continue;
+      let value;
+      try{
+        value=map.getPaintProperty(layer.id,key);
+      }catch(e){
+        value=layer.paint&&layer.paint[key];
+      }
+      const hex=expressionColorFallback(value);
+      if(hex) return hex;
+    }
+  }
+
+  const style=map.getStyle&&map.getStyle();
+  const background=(style&&style.layers||[]).find(layer=>layer.type==='background');
+  if(background&&map.getLayer(background.id)){
+    try{
+      return expressionColorFallback(map.getPaintProperty(background.id,'background-color'));
+    }catch(e){
+      return expressionColorFallback(background.paint&&background.paint['background-color']);
+    }
+  }
+  return null;
+}
+
+function handleMapColorPick(evt){
+  if(!pendingMapColorPick) return false;
+  const pick=pendingMapColorPick;
+  pendingMapColorPick=null;
+  document.body.classList.remove('map-color-pick');
+  const pixelHex=sampleMapColorAtPoint(evt&&evt.point);
+  const styleHex=pixelHex?null:styleColorAtPoint(evt&&evt.point);
+  const hex=pixelHex||styleHex;
+  if(!hex){
+    ss('Colour picker failed | No readable pixel or layer colour found','err');
+    return true;
+  }
+  applyIconColor(pick.name,{enabled:true,hex,mode:pick.mode});
+  refreshAfterPoolIconEdit('Colour sampled from map '+(pixelHex?'pixel':'layer')+' | '+pick.name+' | '+hex);
+  return true;
+}
+
+function sourceSupportsGroupType(type,srcMeta){
+  if(!srcMeta) return false;
+  return type==='symbol' ? srcMeta.pt===true : srcMeta.pt!==true;
+}
+
+function emptySlotForType(type,index){
+  const px=defaultSizeForGroupType(type);
+  return {
+    zMin:index===0?0:index===1?12:16,
+    zMax:index===0?12:index===1?16:22,
+    px,
+    pxMax:px,
+    icon:null
+  };
+}
+
+function stepExpression(fallback,stops){
+  const compact=[];
+  (Array.isArray(stops)?stops:[])
+    .filter(stop=>stop&&Number.isFinite(Number(stop.zoom)))
+    .map(stop=>({zoom:Number(stop.zoom),value:stop.value}))
+    .sort((a,b)=>a.zoom-b.zoom)
+    .forEach(stop=>{
+      const prev=compact[compact.length-1];
+      if(prev&&stop.zoom===prev.zoom){
+        prev.value=stop.value;
+        return;
+      }
+      if(prev&&stop.zoom<prev.zoom) return;
+      compact.push(stop);
+    });
+  if(!compact.length) return fallback;
+  return ['step',['zoom'],fallback,...compact.flatMap(stop=>[stop.zoom,stop.value])];
+}
+
+function interpolatedSizeStops(slot){
+  const zMin=Number(slot&&slot.zMin)||0;
+  const zMax=Number(slot&&slot.zMax)||zMin;
+  const startPx=Math.max(1,Number(slot&&slot.px)||1);
+  const endPx=Math.max(1,Number(slot&&slot.pxMax)||startPx);
+  if(zMax<=zMin) return [{zoom:zMin,px:startPx}];
+  const out=[];
+  for(let i=0;i<=PATTERN_INTERPOLATION_SAMPLES;i++){
+    const t=i/PATTERN_INTERPOLATION_SAMPLES;
+    const zoom=Number((zMin+((zMax-zMin)*t)).toFixed(2));
+    const px=Math.max(1,Math.round(startPx+((endPx-startPx)*t)));
+    const prev=out[out.length-1];
+    if(prev&&prev.zoom===zoom){
+      prev.px=px;
+    }else{
+      out.push({zoom,px});
+    }
+  }
+  return out;
+}
+
+function imageVariantName(iconName,mode,px,zoom,lineGapPx,lineHeightScale,lineOrganic,variantSeed){
+  const zoomKey=zoom===null||typeof zoom==='undefined' ? '' : '_z'+String(zoom).replace(/\./g,'_');
+  const gapKey=mode==='linepattern' ? '_g'+normalizedLineGapPx({lineGapPx}) : '';
+  const heightKey=mode==='linepattern' ? '_h'+String(normalizedLineHeightScale({lineHeightScale})).replace(/\./g,'_') : '';
+  const organicKey=mode==='linepattern' ? '_o'+(normalizedLineOrganic({lineOrganic})?'1':'0') : '';
+  const seedKey=mode==='linepattern' ? '_s'+stableHash(variantSeed||'shared').toString(36) : '';
+  const raw=[iconName,mode,px,zoomKey,gapKey,heightKey,organicKey,seedKey].join('|');
+  return '__sb_'+(mode==='linepattern'?'lp':'pat')+'_'+stableHash(raw).toString(36);
+}
+
+function derivedFillPatternCanvas(srcCanvas,px){
+  const c=document.createElement('canvas');
+  c.width=Math.max(1,px);
+  c.height=Math.max(1,px);
+  const ctx=c.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(srcCanvas,0,0,c.width,c.height);
+  return c;
+}
+
+function derivedLinePatternCanvas(srcCanvas,px,lineGapPx,lineHeightScale,lineOrganic,variantSeed){
+  const widthPx=Math.max(1,Number(px)||1);
+  const tileH=lineWidthValueForPx(widthPx,{lineHeightScale});
+  const gapPx=Math.max(0,Math.round(Number(lineGapPx)||0));
+  const baseScale=Math.min(widthPx/srcCanvas.width,tileH/srcCanvas.height);
+  const baseW=Math.max(1,Math.round(srcCanvas.width*baseScale));
+  const baseH=Math.max(1,Math.round(srcCanvas.height*baseScale));
+  if(!normalizedLineOrganic({lineOrganic})){
+    const c=document.createElement('canvas');
+    const tileW=Math.max(1,baseW+gapPx);
+    c.width=tileW;
+    c.height=tileH;
+    const ctx=c.getContext('2d');
+    ctx.imageSmoothingEnabled=false;
+    const dx=Math.round((tileW-baseW)/2);
+    const dy=Math.round((tileH-baseH)/2);
+    ctx.drawImage(srcCanvas,dx,dy,baseW,baseH);
+    return c;
+  }
+
+  const rand=mulberry32(stableHash(String(variantSeed||'organic')+'|'+widthPx+'|'+gapPx+'|'+tileH));
+  const count=Math.max(3,Math.min(6,Math.round((widthPx+Math.max(gapPx,4))/Math.max(8,baseW*0.75))));
+  const avgStep=Math.max(baseW*0.68,baseW+gapPx);
+  const tileW=Math.max(1,Math.round(avgStep*count));
+  const placements=[];
+  let cursor=0;
+  for(let i=0;i<count;i++){
+    const scaleFactor=clamp(0.84+(rand()*0.28),0.72,1.18);
+    const drawW=Math.max(1,Math.round(baseW*scaleFactor));
+    const drawH=Math.max(1,Math.round(baseH*scaleFactor));
+    const stepJitter=(rand()-0.5)*(gapPx+baseW*0.6);
+    const centerX=cursor+(drawW/2)+((rand()-0.5)*Math.max(2,baseW*0.18));
+    const yOffset=Math.round((rand()-0.5)*tileH*0.34);
+    placements.push({centerX,drawW,drawH,yOffset});
+    cursor+=Math.max(drawW*0.72,avgStep+stepJitter);
+  }
+  const norm=cursor>0 ? (tileW/cursor) : 1;
+  const c=document.createElement('canvas');
+  c.width=tileW;
+  c.height=tileH;
+  const ctx=c.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+
+  placements.forEach(item=>{
+    const centerX=item.centerX*norm;
+    const dx=Math.round(centerX-(item.drawW/2));
+    const dy=Math.round(clamp(((tileH-item.drawH)/2)+item.yOffset,-item.drawH+1,tileH-1));
+    [-tileW,0,tileW].forEach(offset=>{
+      ctx.drawImage(srcCanvas,dx+offset,dy,item.drawW,item.drawH);
+    });
+  });
+  return c;
+}
+
+function registerVariantImage(name,canvas){
+  if(map.hasImage(name)) try{map.removeImage(name);}catch(e){}
+  const ctx=canvas.getContext('2d');
+  const data=ctx.getImageData(0,0,canvas.width,canvas.height);
+  try{
+    map.addImage(name,{width:canvas.width,height:canvas.height,data:data.data},{premultipliedAlpha:false});
+    if(!generatedVariantImageNames.includes(name)) generatedVariantImageNames.push(name);
+  }catch(e){}
+}
+
+function clearGeneratedVariantImages(){
+  generatedVariantImageNames.forEach(name=>{
+    if(map&&map.hasImage&&map.hasImage(name)){
+      try{map.removeImage(name);}catch(e){}
+    }
+  });
+  generatedVariantImageNames=[];
+}
+
+function clearGeneratedSources(){
+  edgePointRenderers=[];
+  patternFadeRenderers=[];
+  activeGeneratedSourceIds.forEach(id=>{
+    if(map&&map.getSource&&map.getSource(id)){
+      try{map.removeSource(id);}catch(e){}
+    }
+  });
+  activeGeneratedSourceIds=[];
+}
+
+function lineWidthExpression(valid,g){
+  if(g.smoothScale===true){
+    const expr=['interpolate',['linear'],['zoom']];
+    valid.forEach(slot=>{
+      const startZ=Number(slot.zMin)||0;
+      const endZ=Number(slot.zMax)||startZ;
+      const startPx=lineWidthValueForPx(slot.px,g);
+      const endPx=lineWidthValueForPx(slot.pxMax||slot.px,g);
+      const lastZ=expr.length>3?expr[expr.length-2]:null;
+      if(lastZ===startZ){
+        expr[expr.length-1]=startPx;
+      }else if(lastZ===null||startZ>lastZ){
+        expr.push(startZ,startPx);
+      }
+      const nextLastZ=expr.length>3?expr[expr.length-2]:null;
+      if(endZ>nextLastZ) expr.push(endZ,endPx);
+    });
+    if(expr.length<7) return lineWidthValueForPx(valid[0].px,g);
+    return expr;
+  }
+  return stepExpression(
+    lineWidthValueForPx(valid[0].px,g),
+    valid.slice(1).map(slot=>({zoom:Number(slot.zMin)||0,value:lineWidthValueForPx(slot.px,g)}))
+  );
+}
+
+function ringsFromGeometry(geometry){
+  if(!geometry) return [];
+  if(geometry.type==='Polygon') return Array.isArray(geometry.coordinates) ? geometry.coordinates : [];
+  if(geometry.type==='MultiPolygon'){
+    const rings=[];
+    (geometry.coordinates||[]).forEach(poly=>(poly||[]).forEach(ring=>rings.push(ring)));
+    return rings;
+  }
+  return [];
+}
+
+function ringsWithRoleFromGeometry(geometry){
+  if(!geometry) return [];
+  if(geometry.type==='Polygon'){
+    return (geometry.coordinates||[]).map((ring,index)=>({ring,isHole:index>0}));
+  }
+  if(geometry.type==='MultiPolygon'){
+    const rings=[];
+    (geometry.coordinates||[]).forEach(poly=>{
+      (poly||[]).forEach((ring,index)=>rings.push({ring,isHole:index>0}));
+    });
+    return rings;
+  }
+  return [];
+}
+
+function screenPointInsideRing(x,y,polyPts){
+  let inside=false;
+  for(let i=0,j=polyPts.length-1;i<polyPts.length;j=i++){
+    const xi=polyPts[i].x, yi=polyPts[i].y;
+    const xj=polyPts[j].x, yj=polyPts[j].y;
+    const intersects=((yi>y)!==(yj>y)) && (x < ((xj-xi)*(y-yi)/(yj-yi||1e-9))+xi);
+    if(intersects) inside=!inside;
+  }
+  return inside;
+}
+
+function featureCollectionHashFeature(feature){
+  const geom=feature&&feature.geometry;
+  if(!geom) return '';
+  const rings=ringsFromGeometry(geom);
+  const firstRing=rings[0]||[];
+  const sample=firstRing.slice(0,4).map(c=>Array.isArray(c)?[Number(c[0]).toFixed(5),Number(c[1]).toFixed(5)]:c);
+  return stableHash(JSON.stringify([feature.id||'',feature.properties||{},sample])).toString(36);
+}
+
+function edgeSlotForZoom(valid,zoom){
+  return legendSlotForZoom(valid.map(s=>({
+    zMin:Number(s.zMin)||0,
+    zMax:Number(s.zMax)||0,
+    icon:s.icon,
+    px:s.px,
+    pxMax:s.pxMax||s.px
+  })),zoom) || valid[0];
+}
+
+function patternFadeOpacityExpression(g){
+  const max=normalizedPatternFadeOpacity(g);
+  return ['interpolate',['linear'],['get','fadeStep'],0,max,1,max*0.62,2,max*0.33,3,max*0.12];
+}
+
+function patternFadeFeatureCollection(g,src,filterExpr){
+  if(!map||!src||!src.sourceLayer||!normalizedPatternFadeEnabled(g)) return {type:'FeatureCollection',features:[]};
+  let sourceFeatures=[];
+  try{
+    sourceFeatures=map.querySourceFeatures(src.source,{sourceLayer:src.sourceLayer,filter:filterExpr})||[];
+  }catch(e){
+    console.warn('Pattern fade source query failed',e);
+    return {type:'FeatureCollection',features:[]};
+  }
+
+  const widthPx=normalizedPatternFadeWidthPx(g);
+  const steps=4;
+  const viewport={w:map.getCanvas().width,h:map.getCanvas().height,pad:Math.max(80,widthPx*2)};
+  const features=[];
+  const seenRings=new Set();
+  const maxBands=3200;
+
+  function inViewport(a,b){
+    const minX=Math.min(a.x,b.x), maxX=Math.max(a.x,b.x);
+    const minY=Math.min(a.y,b.y), maxY=Math.max(a.y,b.y);
+    return !(maxX<-viewport.pad||minX>viewport.w+viewport.pad||maxY<-viewport.pad||minY>viewport.h+viewport.pad);
+  }
+
+  function unprojectPoint(pt){
+    const ll=map.unproject([pt.x,pt.y]);
+    return [ll.lng,ll.lat];
+  }
+
+  sourceFeatures.forEach((feature,featureIndex)=>{
+    if(features.length>=maxBands) return;
+    const featureKey=featureCollectionHashFeature(feature)||String(featureIndex);
+    ringsWithRoleFromGeometry(feature.geometry).forEach((entry,ringIndex)=>{
+      if(features.length>=maxBands||!entry||!Array.isArray(entry.ring)||entry.ring.length<2) return;
+      const ringKey=featureKey+'-'+ringIndex+'-'+(entry.isHole?'h':'o');
+      if(seenRings.has(ringKey)) return;
+      seenRings.add(ringKey);
+      const pts=entry.ring
+        .filter(c=>Array.isArray(c)&&Number.isFinite(Number(c[0]))&&Number.isFinite(Number(c[1])))
+        .map(c=>map.project({lng:Number(c[0]),lat:Number(c[1])}));
+      if(pts.length<2) return;
+
+      for(let i=0;i<pts.length-1&&features.length<maxBands;i++){
+        const a=pts[i], b=pts[i+1];
+        if(!inViewport(a,b)) continue;
+        const dx=b.x-a.x, dy=b.y-a.y;
+        const len=Math.sqrt(dx*dx+dy*dy);
+        if(len<1) continue;
+        const nx=-dy/len, ny=dx/len;
+        const midX=(a.x+b.x)/2, midY=(a.y+b.y)/2;
+        const sampleA={x:midX+nx*2,y:midY+ny*2};
+        const aInside=screenPointInsideRing(sampleA.x,sampleA.y,pts);
+        const wantInside=!entry.isHole;
+        const side=(aInside===wantInside) ? 1 : -1;
+
+        for(let step=0;step<steps&&features.length<maxBands;step++){
+          const d0=(widthPx*step)/steps;
+          const d1=(widthPx*(step+1))/steps;
+          const p0={x:a.x+(nx*side*d0),y:a.y+(ny*side*d0)};
+          const p1={x:b.x+(nx*side*d0),y:b.y+(ny*side*d0)};
+          const p2={x:b.x+(nx*side*d1),y:b.y+(ny*side*d1)};
+          const p3={x:a.x+(nx*side*d1),y:a.y+(ny*side*d1)};
+          const coords=[unprojectPoint(p0),unprojectPoint(p1),unprojectPoint(p2),unprojectPoint(p3),unprojectPoint(p0)];
+          features.push({
+            type:'Feature',
+            geometry:{type:'Polygon',coordinates:[coords]},
+            properties:{fadeStep:step}
+          });
+        }
+      }
+    });
+  });
+
+  return {type:'FeatureCollection',features};
+}
+
+function edgePointFeatureCollection(g,valid,src,filterExpr){
+  if(!map||!src||!src.sourceLayer) return {type:'FeatureCollection',features:[]};
+  let sourceFeatures=[];
+  try{
+    sourceFeatures=map.querySourceFeatures(src.source,{sourceLayer:src.sourceLayer,filter:filterExpr})||[];
+  }catch(e){
+    console.warn('Forest edge source query failed',e);
+    return {type:'FeatureCollection',features:[]};
+  }
+
+  const z=map.getZoom();
+  const activeSlot=edgeSlotForZoom(valid,z);
+  const displayPx=(slotDisplayWidthAtZoom(activeSlot,g.smoothScale===true,z)||Math.max(1,Number(activeSlot&&activeSlot.px)||defaultSizeForGroupType('edgepoints')))*normalizedLineHeightScale(g);
+  const spacing=Math.max(8,normalizedLineGapPx(g)||defaultLineGapPx());
+  const bandPx=Math.max(10,displayPx*1.4);
+  const organic=normalizedLineOrganic(g);
+  const viewport={w:map.getCanvas().width,h:map.getCanvas().height,pad:Math.max(80,bandPx*2)};
+  const features=[];
+  const seenRings=new Set();
+  const maxPoints=1400;
+
+  sourceFeatures.forEach((feature,featureIndex)=>{
+    if(features.length>=maxPoints) return;
+    const featureKey=featureCollectionHashFeature(feature)||String(featureIndex);
+    const rings=ringsFromGeometry(feature.geometry);
+    rings.forEach((ring,ringIndex)=>{
+      if(features.length>=maxPoints||!Array.isArray(ring)||ring.length<2) return;
+      const ringKey=featureKey+'-'+ringIndex;
+      if(seenRings.has(ringKey)) return;
+      seenRings.add(ringKey);
+      const rand=mulberry32(stableHash((g.id||g.name||'edge')+'|'+ringKey+'|'+Math.round(z*10)));
+      const pts=ring
+        .filter(c=>Array.isArray(c)&&Number.isFinite(Number(c[0]))&&Number.isFinite(Number(c[1])))
+        .map(c=>map.project({lng:Number(c[0]),lat:Number(c[1])}));
+      if(pts.length<2) return;
+      let carry=rand()*spacing;
+      for(let i=0;i<pts.length-1;i++){
+        const a=pts[i], b=pts[i+1];
+        const dx=b.x-a.x, dy=b.y-a.y;
+        const len=Math.sqrt(dx*dx+dy*dy);
+        if(!len) continue;
+        const tx=dx/len, ty=dy/len;
+        const nx=-ty, ny=tx;
+        let dist=carry;
+        while(dist<len&&features.length<maxPoints){
+          const t=dist/len;
+          const baseX=a.x+(dx*t);
+          const baseY=a.y+(dy*t);
+          const side=(rand()<0.5?-1:1);
+          const offsetDistance=organic ? bandPx*(0.04+(rand()*0.74)) : 0;
+          const tangentJitter=organic ? (rand()-0.5)*spacing*0.36 : 0;
+          let px=baseX+(tx*tangentJitter);
+          let py=baseY+(ty*tangentJitter);
+          if(offsetDistance){
+            const candidateA={x:px+(nx*side*offsetDistance),y:py+(ny*side*offsetDistance)};
+            const candidateB={x:px-(nx*side*offsetDistance),y:py-(ny*side*offsetDistance)};
+            const aInside=screenPointInsideRing(candidateA.x,candidateA.y,pts);
+            const bInside=screenPointInsideRing(candidateB.x,candidateB.y,pts);
+            const insideCandidate=aInside ? candidateA : bInside ? candidateB : candidateA;
+            const outsideCandidate=aInside ? candidateB : bInside ? candidateA : candidateB;
+            const chosen=rand()<0.62 ? insideCandidate : outsideCandidate;
+            px=chosen.x;
+            py=chosen.y;
+          }
+          if(px>=-viewport.pad&&px<=viewport.w+viewport.pad&&py>=-viewport.pad&&py<=viewport.h+viewport.pad){
+            const ll=map.unproject([px,py]);
+            features.push({
+              type:'Feature',
+              geometry:{type:'Point',coordinates:[ll.lng,ll.lat]},
+              properties:{edge:1,seed:ringKey}
+            });
+          }
+          dist+=organic ? spacing*(0.62+(rand()*0.9)) : spacing;
+        }
+        carry=Math.max(0,dist-len);
+      }
+    });
+  });
+
+  return {type:'FeatureCollection',features};
+}
+
+function edgePointSizeSlots(valid,g){
+  const scale=normalizedLineHeightScale(g);
+  return valid.map(slot=>Object.assign({},slot,{
+    px:Math.max(1,Number(slot.px||1)*scale),
+    pxMax:Math.max(1,Number(slot.pxMax||slot.px||1)*scale)
+  }));
+}
+
+function updateEdgePointSources(){
+  if(!ready||!map||!edgePointRenderers.length) return;
+  edgePointRenderers.forEach(cfg=>{
+    const source=map.getSource(cfg.sourceId);
+    if(source&&source.setData){
+      source.setData(edgePointFeatureCollection(cfg.group,cfg.valid,cfg.src,cfg.filterExpr));
+    }
+  });
+}
+
+function updatePatternFadeSources(){
+  if(!ready||!map||!patternFadeRenderers.length) return;
+  patternFadeRenderers.forEach(cfg=>{
+    const source=map.getSource(cfg.sourceId);
+    if(source&&source.setData){
+      source.setData(patternFadeFeatureCollection(cfg.group,cfg.src,cfg.filterExpr));
+    }
+  });
+}
+
+function updateGeneratedDynamicSources(){
+  updateEdgePointSources();
+  updatePatternFadeSources();
+}
+
+function patternImageExpression(valid,g,mode){
+  const stops=[];
+  const lineGapPx=mode==='linepattern' ? normalizedLineGapPx(g) : 0;
+  const lineHeightScale=mode==='linepattern' ? normalizedLineHeightScale(g) : 1;
+  const lineOrganic=mode==='linepattern' ? normalizedLineOrganic(g) : false;
+  const variantSeed=mode==='linepattern' ? (g.id||g.name||'linepattern') : '';
+  valid.forEach(slot=>{
+    const srcCanvas=pool[slot.icon]&&pool[slot.icon].canvas;
+    if(!srcCanvas) return;
+    const zoomStops=g.smoothScale===true ? interpolatedSizeStops(slot) : [{zoom:Number(slot.zMin)||0,px:Math.max(1,Number(slot.px)||1)}];
+    zoomStops.forEach(stop=>{
+      const name=imageVariantName(slot.icon,mode,stop.px,g.smoothScale===true?stop.zoom:null,lineGapPx,lineHeightScale,lineOrganic,variantSeed);
+      if(!map.hasImage(name)||!generatedVariantImageNames.includes(name)){
+        const canvas=mode==='linepattern' ? derivedLinePatternCanvas(srcCanvas,stop.px,lineGapPx,lineHeightScale,lineOrganic,variantSeed) : derivedFillPatternCanvas(srcCanvas,stop.px);
+        registerVariantImage(name,canvas);
+      }
+      stops.push({zoom:stop.zoom,value:name});
+    });
+  });
+  if(!stops.length) return null;
+  return stepExpression(stops[0].value,stops.slice(1));
+}
+
+function slotDisplayWidthAtZoom(slot,smoothScale,zoom){
+  const zMin=Number(slot&&slot.zMin)||0;
+  const zMax=Number(slot&&slot.zMax)||zMin;
+  if(zoom<zMin||zoom>zMax) return 0;
+  const startPx=Math.max(1,Number(slot&&slot.px)||1);
+  const endPx=Math.max(1,Number(slot&&slot.pxMax)||startPx);
+  if(!smoothScale||zMax<=zMin) return startPx;
+  const t=clamp((zoom-zMin)/(zMax-zMin),0,1);
+  return startPx+((endPx-startPx)*t);
+}
+
+function slotDisplayHeightAtZoom(slot,smoothScale,zoom){
+  if(!slot||!slot.icon||!pool[slot.icon]) return 0;
+  const iconMeta=pool[slot.icon];
+  if(!iconMeta.w||!iconMeta.h) return 0;
+  const widthPx=slotDisplayWidthAtZoom(slot,smoothScale,zoom);
+  if(!widthPx) return 0;
+  return widthPx*(iconMeta.h/iconMeta.w);
+}
+
+function slotVisibleBottomAtZoom(slot,smoothScale,zoom){
+  if(!slot||!slot.icon||!pool[slot.icon]) return 0;
+  const iconMeta=pool[slot.icon];
+  const heightPx=slotDisplayHeightAtZoom(slot,smoothScale,zoom);
+  if(!heightPx) return 0;
+  const bottomFactor=Number.isFinite(iconMeta.visibleBottomFactor)?iconMeta.visibleBottomFactor:(NATIVE_POI_LABEL_HEIGHT_FACTOR/2);
+  return heightPx*bottomFactor;
+}
+
+function nativePoiLabelOffsetForZoom(zoom){
+  let maxVisibleBottomPx=0;
+  groups.forEach(g=>{
+    if(!g||g.type!=='symbol'||g.visible===false) return;
+    const srcMeta=sourceMetaForGroup(g);
+    if(!srcMeta||!srcMeta.pt) return;
+    g.slots.forEach(slot=>{
+      maxVisibleBottomPx=Math.max(maxVisibleBottomPx,slotVisibleBottomAtZoom(slot,g.smoothScale===true,zoom));
+    });
+  });
+  if(!maxVisibleBottomPx) return NATIVE_POI_LABEL_MIN_OFFSET;
+  const offsetEm=(maxVisibleBottomPx+NATIVE_POI_LABEL_GAP_PX)/NATIVE_POI_LABEL_BASE_TEXT_PX;
+  return Number(clamp(offsetEm,NATIVE_POI_LABEL_MIN_OFFSET,NATIVE_POI_LABEL_MAX_OFFSET).toFixed(2));
+}
+
+function applyNativePoiTextPlacement(id){
+  if(!map.getLayer(id)) return;
+  const layoutState=nativePoiTextLayoutForLayer(id);
+  const textFieldState=layoutState['text-field'];
+  if(!textFieldState||!textFieldState.hasValue) return;
+
+  if(nativePoiVisible){
+    const anchorState=layoutState['text-anchor'];
+    const offsetState=layoutState['text-offset'];
+    const variableAnchorState=layoutState['text-variable-anchor'];
+    const radialOffsetState=layoutState['text-radial-offset'];
+
+    try{
+      map.setLayoutProperty(id,'text-anchor',anchorState&&anchorState.hasValue ? anchorState.value : 'center');
+    }catch(e){
+      console.warn('POI text-anchor restore failed for layer',id,e);
+    }
+    try{
+      map.setLayoutProperty(id,'text-offset',offsetState&&offsetState.hasValue ? offsetState.value : [0,0]);
+    }catch(e){
+      console.warn('POI text-offset restore failed for layer',id,e);
+    }
+    if(variableAnchorState&&variableAnchorState.hasValue){
+      try{
+        map.setLayoutProperty(id,'text-variable-anchor',variableAnchorState.value);
+      }catch(e){
+        console.warn('POI text-variable-anchor restore failed for layer',id,e);
+      }
+    }
+    if(radialOffsetState&&radialOffsetState.hasValue){
+      try{
+        map.setLayoutProperty(id,'text-radial-offset',radialOffsetState.value);
+      }catch(e){
+        console.warn('POI text-radial-offset restore failed for layer',id,e);
+      }
+    }else if(variableAnchorState&&variableAnchorState.hasValue){
+      try{
+        map.setLayoutProperty(id,'text-radial-offset',0);
+      }catch(e){
+        console.warn('POI text-radial-offset reset failed for layer',id,e);
+      }
+    }
+    return;
+  }
+
+  const labelOffset=nativePoiLabelOffsetForZoom(map.getZoom());
+  const variableAnchorState=layoutState['text-variable-anchor'];
+  if(variableAnchorState&&variableAnchorState.hasValue){
+    try{
+      map.setLayoutProperty(id,'text-variable-anchor',['top']);
+    }catch(e){
+      console.warn('POI text-variable-anchor update failed for layer',id,e);
+    }
+    try{
+      map.setLayoutProperty(id,'text-radial-offset',labelOffset);
+    }catch(e){
+      console.warn('POI text-radial-offset update failed for layer',id,e);
+    }
+    return;
+  }
+
+  try{
+    map.setLayoutProperty(id,'text-anchor','top');
+  }catch(e){
+    console.warn('POI text-anchor update failed for layer',id,e);
+  }
+  try{
+    map.setLayoutProperty(id,'text-offset',[0,labelOffset]);
+  }catch(e){
+    console.warn('POI text-offset update failed for layer',id,e);
+  }
+}
+
+function nativeAreaLayerIds(){
+  const style=map&&map.getStyle?map.getStyle():null;
+  const layers=style&&Array.isArray(style.layers)?style.layers:[];
+  return layers
+    .filter(layer=>
+      layer &&
+      (layer.type==='fill'||layer.type==='fill-extrusion') &&
+      !isCustomOverlayLayerId(layer.id)
+    )
+    .map(layer=>layer.id);
+}
+
+function applyNativePoiVisibility(){
+  renderNativePoiToggle();
+  if(typeof map==='undefined'||!map) return;
+  nativePoiLayerIds().forEach(id=>{
+    try{
+      if(!map.getLayer(id)) return;
+      const iconOpacity=nativePoiIconOpacityForLayer(id);
+      map.setPaintProperty(id,'icon-opacity',nativePoiVisible ? iconOpacity : 0);
+      applyNativePoiTextPlacement(id);
+    }catch(e){
+      console.warn('POI toggle failed for layer',id,e);
+    }
+  });
+}
+
+function applyNativeAreaVisibility(){
+  renderNativeAreaToggle();
+  if(typeof map==='undefined'||!map) return;
+  nativeAreaLayerIds().forEach(id=>{
+    try{
+      if(map.getLayer(id)) map.setLayoutProperty(id,'visibility',nativeAreaVisible?'visible':'none');
+    }catch(e){
+      console.warn('Area toggle failed for layer',id,e);
+    }
+  });
+}
+
+function bindNativePoiToggle(){
+  const btn=document.getElementById('native-poi-toggle');
+  if(!btn||btn.dataset.bound==='1') return;
+  btn.dataset.bound='1';
+  renderNativePoiToggle();
+  btn.addEventListener('click',()=>{
+    nativePoiVisible=!nativePoiVisible;
+    applyNativePoiVisibility();
+    persistState();
+    ss(nativePoiVisible?'Basemap symbols shown':'Basemap symbols hidden | labels remain visible','ok');
+  });
+}
+
+function bindNativeAreaToggle(){
+  const btn=document.getElementById('native-area-toggle');
+  if(!btn||btn.dataset.bound==='1') return;
+  btn.dataset.bound='1';
+  renderNativeAreaToggle();
+  btn.addEventListener('click',()=>{
+    nativeAreaVisible=!nativeAreaVisible;
+    applyNativeAreaVisibility();
+    persistState();
+    ss(nativeAreaVisible?'Basemap areas shown':'Basemap areas hidden','ok');
+  });
+}
+
+function renderInspectToggle(){
+  const btn=document.getElementById('inspect-toggle');
+  if(!btn) return;
+  btn.textContent='Inspector: '+(inspectorEnabled?'on':'off');
+  btn.classList.toggle('off',!inspectorEnabled);
+  btn.title=inspectorEnabled
+    ? 'Disable click inspector'
+    : 'Enable click inspector';
+}
+
+function clearInspectPanel(){
+  const panel=document.getElementById('inspect-panel');
+  if(!panel) return;
+  panel.innerHTML='';
+  panel.style.display='none';
+}
+
+function renderInspectPanel(rows){
+  const panel=document.getElementById('inspect-panel');
+  if(!panel) return;
+  if(!rows||!rows.length){
+    clearInspectPanel();
+    return;
+  }
+  panel.innerHTML='';
+  const title=document.createElement('div');
+  title.className='inspect-title';
+  title.textContent='Inspector';
+  panel.appendChild(title);
+  rows.forEach(({text,muted=false,code=false})=>{
+    const row=document.createElement('div');
+    row.className='inspect-row'+(muted?' inspect-muted':'')+(code?' inspect-code':'');
+    row.textContent=text;
+    panel.appendChild(row);
+  });
+  panel.style.display='block';
+}
+
+function bindInspectToggle(){
+  const btn=document.getElementById('inspect-toggle');
+  if(!btn||btn.dataset.bound==='1') return;
+  btn.dataset.bound='1';
+  renderInspectToggle();
+  btn.addEventListener('click',()=>{
+    inspectorEnabled=!inspectorEnabled;
+    renderInspectToggle();
+    if(!inspectorEnabled) clearInspectPanel();
+    persistState();
+    ss(inspectorEnabled?'Inspector enabled | Click on the map':'Inspector disabled','ok');
+  });
+}
+
+async function searchCity(query){
+  const url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&addressdetails=1&accept-language=en&q='+encodeURIComponent(query);
+  const res=await fetch(url,{headers:{'Accept':'application/json'}});
+  if(!res.ok) throw new Error('Search request failed: '+res.status);
+  const data=await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
+function citySearchResultLabel(result){
+  const address=result&&result.address ? result.address : {};
+  return address.city || address.town || address.village || address.municipality || result.display_name || 'Selected place';
+}
+
+function isCityLikeResult(result){
+  const type=String((result&&result.type)||'').toLowerCase();
+  const cls=String((result&&result.class)||'').toLowerCase();
+  return cls==='place' && ['city','town','village','municipality','hamlet'].includes(type);
+}
+
+async function runCitySearch(){
+  const input=document.getElementById('city-search-input');
+  const btn=document.getElementById('city-search-btn');
+  if(!input||!btn||typeof map==='undefined'||!map) return;
+  const query=input.value.trim();
+  if(!query){
+    ss('Enter a city name to search','err');
+    input.focus();
+    return;
+  }
+
+  btn.disabled=true;
+  const prevLabel=btn.textContent;
+  btn.textContent='Searching...';
+  try{
+    const results=await searchCity(query);
+    const cityResult=results.find(isCityLikeResult) || results[0];
+    if(!cityResult){
+      ss('No matching city found','err');
+      return;
+    }
+
+    const lon=Number(cityResult.lon);
+    const lat=Number(cityResult.lat);
+    if(!Number.isFinite(lon)||!Number.isFinite(lat)){
+      throw new Error('Search result has invalid coordinates');
+    }
+
+    const placeLabel=citySearchResultLabel(cityResult);
+    const bbox=Array.isArray(cityResult.boundingbox) ? cityResult.boundingbox.map(Number) : [];
+    if(bbox.length===4 && bbox.every(Number.isFinite)){
+      map.fitBounds([[bbox[2],bbox[0]],[bbox[3],bbox[1]]],{padding:60,maxZoom:12,duration:1200});
+    }else{
+      map.flyTo({center:[lon,lat],zoom:12,essential:true,duration:1200});
+    }
+
+    if(window.citySearchMarker){
+      try{ window.citySearchMarker.remove(); }catch(e){}
+    }
+    window.citySearchMarker=new maplibregl.Marker({color:'#2563eb'}).setLngLat([lon,lat]).addTo(map);
+    ss('City found | '+placeLabel,'ok');
+  }catch(e){
+    console.warn('City search failed',e);
+    ss('City search failed | '+(e&&e.message?e.message:String(e)),'err');
+  }finally{
+    btn.disabled=false;
+    btn.textContent=prevLabel;
+  }
+}
+
+function bindCitySearch(){
+  const input=document.getElementById('city-search-input');
+  const btn=document.getElementById('city-search-btn');
+  if(!input||!btn) return;
+  if(btn.dataset.bound!=='1'){
+    btn.dataset.bound='1';
+    btn.addEventListener('click',()=>{ void runCitySearch(); });
+  }
+  if(input.dataset.bound!=='1'){
+    input.dataset.bound='1';
+    input.addEventListener('keydown',e=>{
+      if(e.key!=='Enter') return;
+      e.preventDefault();
+      void runCitySearch();
+    });
+  }
+}
+
+function featureSourceLayer(feature){
+  return feature&&((feature.sourceLayer)||((feature.layer||{})['source-layer'])) || '';
+}
+
+function isHospitalFeature(feature){
+  const props=(feature&&feature.properties)||{};
+  const cls=String(props.class||props.type||'').trim().toLowerCase();
+  const sub=String(props.subclass||props.subtype||'').trim().toLowerCase();
+  return cls==='hospital'||sub==='hospital';
+}
+
+function uniqueHospitalFeatures(features){
+  const seen=new Set();
+  return (features||[]).filter(feature=>{
+    const props=feature.properties||{};
+    const key=[
+      featureSourceLayer(feature),
+      String(props.name||props.name_en||''),
+      String(props.class||props.type||''),
+      String(props.subclass||props.subtype||'')
+    ].join('|');
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function summarizeFeature(feature){
+  const props=feature.properties||{};
+  const sourceLayer=featureSourceLayer(feature)||'-';
+  const cls=String(props.class||props.type||'').trim()||'-';
+  const sub=String(props.subclass||props.subtype||'').trim()||'-';
+  const name=String(props.name||props.name_en||'').trim();
+  const parts=[sourceLayer,'class='+cls];
+  if(sub!=='-') parts.push('subclass='+sub);
+  if(name) parts.push('name='+name);
+  return parts.join(' | ');
+}
+
+function hospitalInLoadedTiles(){
+  if(typeof map==='undefined'||!map) return {available:false,count:0};
+  const sourceId=findStyleSourceForLayerName('poi')||SRCS.poi_label.source;
+  if(!sourceId) return {available:false,count:0};
+  try{
+    const features=map.querySourceFeatures(sourceId,{sourceLayer:'poi'});
+    const hospitals=uniqueHospitalFeatures(features.filter(isHospitalFeature));
+    return {available:true,count:hospitals.length};
+  }catch(e){
+    console.warn('hospital tile query failed',e);
+    return {available:false,count:0};
+  }
+}
+
+function inspectAtPoint(evt){
+  if(typeof map==='undefined'||!map) return;
+  const bbox=[
+    [evt.point.x-INSPECTOR_HIT_RADIUS,evt.point.y-INSPECTOR_HIT_RADIUS],
+    [evt.point.x+INSPECTOR_HIT_RADIUS,evt.point.y+INSPECTOR_HIT_RADIUS]
+  ];
+  const rendered=map.queryRenderedFeatures(bbox).filter(feature=>!isCustomOverlayLayerId((feature.layer||{}).id));
+  const renderedUnique=[];
+  const seen=new Set();
+  rendered.forEach(feature=>{
+    const summary=summarizeFeature(feature);
+    if(!seen.has(summary)){
+      seen.add(summary);
+      renderedUnique.push(feature);
+    }
+  });
+  const hospitalState=hospitalInLoadedTiles();
+  const renderedHospital=renderedUnique.some(isHospitalFeature);
+  const rows=[
+    {text:'Zoom: '+map.getZoom().toFixed(1)+' | Lon: '+evt.lngLat.lng.toFixed(5)+' | Lat: '+evt.lngLat.lat.toFixed(5)},
+    {text:hospitalState.available
+      ? 'Hospital in loaded tiles: '+(hospitalState.count?'yes':'no')+' ('+hospitalState.count+' matches in the loaded tile set)'
+      : 'Hospital in loaded tiles: not available for inspection'},
+    {text:'Hospital at click location: '+(renderedHospital?'yes':'no')}
+  ];
+  if(renderedUnique.length){
+    rows.push({text:'Features at the clicked location:',muted:true});
+    renderedUnique.slice(0,8).forEach(feature=>{
+      rows.push({text:summarizeFeature(feature),code:true});
+    });
+    if(renderedUnique.length>8){
+      rows.push({text:'... '+(renderedUnique.length-8)+' more features',muted:true});
+    }
+  }else{
+    rows.push({text:'No rendered features found at the clicked location.',muted:true});
+  }
+  renderInspectPanel(rows);
+}
+
+function initHeaderNote(){
+  const hdr=document.querySelector('.hdr');
+  if(!hdr||hdr.querySelector('.thesis-note')) return;
+  const note=document.createElement('p');
+  note.className='thesis-note';
+  hdr.appendChild(note);
+  updateHeaderNote();
+}
+
+function updateHeaderNote(){
+  const note=document.querySelector('.hdr .thesis-note');
+  if(!note) return;
+  note.textContent='Created for the master thesis "Affective design of symbols and patterns in multi-scale maps using generative artificial intelligence".';
+}
+
+function findStyleSourceForLayerName(sourceLayer){
+  const style=map&&map.getStyle?map.getStyle():null;
+  const layers=style&&Array.isArray(style.layers)?style.layers:[];
+  const match=layers.find(layer=>layer&&typeof layer.source==='string'&&layer['source-layer']===sourceLayer);
+  return match ? match.source : null;
+}
+
+function bindBasemapControls(){
+  if(basemapControlsBound) return;
+  basemapControlsBound=true;
+  const select=document.getElementById('basemap-select');
+  const applyBtn=document.getElementById('basemap-apply');
+  if(!select||!applyBtn) return;
+
+  Object.entries(BASEMAPS).forEach(([id,meta])=>{
+    const option=document.createElement('option');
+    option.value=id;
+    option.textContent=meta.label;
+    select.appendChild(option);
+  });
+
+  select.addEventListener('change',()=>{
+    activeBasemapId=normalizeBasemapId(select.value);
+    renderBasemapControls();
+    persistState();
+  });
+  applyBtn.addEventListener('click',()=>{
+    void applyBasemap();
+  });
+}
+
+function renderBasemapControls(){
+  const select=document.getElementById('basemap-select');
+  const help=document.getElementById('basemap-help');
+  if(!select||!help) return;
+  const basemap=currentBasemapConfig();
+  select.value=normalizeBasemapId(activeBasemapId);
+  help.textContent=basemap.help||'';
+}
+
+async function applyBasemap(){
+  const basemap=currentBasemapConfig();
+  updateHeaderNote();
+  renderBasemapControls();
+  persistState();
+  if(typeof map==='undefined'||!map) return;
+  ready=false;
+  active=[];
+  ss('Loading basemap | '+basemap.styleName);
+  map.setStyle(currentBasemapStyleUrl());
+}
+
+function detectBaseVectorSourceId(){
+  const style=map&&map.getStyle?map.getStyle():null;
+  const sources=style&&style.sources ? Object.entries(style.sources) : [];
+  const vectorSources=sources.filter(([,src])=>src&&src.type==='vector');
+  if(!vectorSources.length) return null;
+  const preferred=vectorSources.find(([,src])=>{
+    const haystack=[
+      typeof src.url==='string' ? src.url : '',
+      ...(Array.isArray(src.tiles)?src.tiles:[])
+    ].join(' ').toLowerCase();
+    return VECTOR_SOURCE_HINTS.some(hint=>haystack.includes(hint));
+  });
+  return (preferred||vectorSources[0])[0];
+}
+
+function configureBaseVectorSource(){
+  const sourceId=detectBaseVectorSourceId();
+  if(!sourceId) return null;
+  Object.values(SRCS).forEach(src=>{
+    if(src.sourceLayer) src.source=findStyleSourceForLayerName(src.sourceLayer)||sourceId;
+  });
+  AERODROME_LABEL_META.source=findStyleSourceForLayerName(AERODROME_LABEL_META.sourceLayer)||sourceId;
+  return sourceId;
+}
+
+function ensureCustomGeoJsonSources(){
+  Object.values(CUSTOM_GEOJSON_SOURCES).forEach(meta=>{
+    try{
+      if(!map.getSource(meta.id)){
+        map.addSource(meta.id,{
+          type:'geojson',
+          data:meta.url
+        });
+      }
+    }catch(e){
+      console.warn('Custom GeoJSON source load failed for',meta.id,e);
+    }
+  });
+}
+
+function eyeSvg(isVisible){
+  return isVisible
+    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 12S5.7 5.8 12 5.8 21.8 12 21.8 12 18.3 18.2 12 18.2 2.2 12 2.2 12Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'
+    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 12S5.7 5.8 12 5.8 21.8 12 21.8 12 18.3 18.2 12 18.2 2.2 12 2.2 12Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.1" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+}
+
+function renderVisibilityButton(btn,isVisible){
+  btn.classList.toggle('off',!isVisible);
+  btn.title=isVisible ? 'Hide layer' : 'Show layer';
+  btn.setAttribute('aria-label',btn.title);
+  btn.innerHTML=eyeSvg(isVisible);
+}
+
+function serializeGroups(){
+  return groups.map(g=>({
+    id:g.id,
+    name:g.name,
+    type:g.type,
+    visible:g.visible!==false,
+    smoothScale:g.smoothScale===true,
+    opacity:normalizedOpacity(g),
+    lineGapPx:normalizedLineGapPx(g),
+    lineHeightScale:normalizedLineHeightScale(g),
+    lineOrganic:normalizedLineOrganic(g),
+    patternFadeEnabled:normalizedPatternFadeEnabled(g),
+    patternFadeWidthPx:normalizedPatternFadeWidthPx(g),
+    patternFadeOpacity:normalizedPatternFadeOpacity(g),
+    src:g.src,
+    typeValue:g.typeValue||'',
+    subtypeValue:g.subtypeValue||'',
+    slots:g.slots.map(s=>({
+      zMin:s.zMin,
+      zMax:s.zMax,
+      px:s.px,
+      pxMax:s.pxMax||s.px,
+      icon:s.icon||null
+    }))
+  }));
+}
+
+function serializePool(){
+  const data={};
+  Object.entries(pool).forEach(([name,item])=>{
+    if(item&&item.dataUrl){
+      data[name]={
+        dataUrl:item.dataUrl,
+        originalDataUrl:item.originalDataUrl||item.dataUrl,
+        color:normalizedIconColorConfig(item.color),
+        w:item.w,
+        h:item.h
+      };
+    }
+  });
+  return data;
+}
+
+function persistState(){
+  try{
+    localStorage.setItem(APP_STATE_KEY,JSON.stringify({
+      activeBasemapId:normalizeBasemapId(activeBasemapId),
+      nativePoiVisible,
+      nativeAreaVisible,
+      inspectorEnabled,
+      poolCollapsed,
+      pool:serializePool(),
+      groups:serializeGroups(),
+      jsonOut,
+      json2xOut,
+      spritePngDataUrl,
+      sprite2xPngDataUrl,
+      sidebarWidth
+    }));
+  }catch(e){
+    console.warn('localStorage save failed',e);
+  }
+}
+
+function clampSidebarWidth(value){
+  const maxByViewport=Math.max(MIN_SIDEBAR_WIDTH,Math.min(MAX_SIDEBAR_WIDTH,window.innerWidth-320));
+  return Math.min(maxByViewport,Math.max(MIN_SIDEBAR_WIDTH,Math.round(Number(value)||DEFAULT_SIDEBAR_WIDTH)));
+}
+
+function applySidebarWidth(width){
+  sidebarWidth=clampSidebarWidth(width);
+  const layout=document.querySelector('.layout');
+  if(layout) layout.style.setProperty('--sidebar-w',sidebarWidth+'px');
+  if(ready) map.resize();
+}
+
+function initSidebarResize(){
+  const handle=document.getElementById('sidebar-resize');
+  if(!handle) return;
+
+  let startX=0;
+  let startWidth=sidebarWidth;
+  let dragging=false;
+
+  function stopDrag(){
+    if(!dragging) return;
+    dragging=false;
+    handle.classList.remove('drag');
+    document.body.classList.remove('resizing-sidebar');
+    window.removeEventListener('mousemove',onDrag);
+    window.removeEventListener('mouseup',stopDrag);
+    persistState();
+  }
+
+  function onDrag(e){
+    if(!dragging) return;
+    applySidebarWidth(startWidth+(e.clientX-startX));
+  }
+
+  handle.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    startX=e.clientX;
+    startWidth=sidebarWidth;
+    dragging=true;
+    handle.classList.add('drag');
+    document.body.classList.add('resizing-sidebar');
+    window.addEventListener('mousemove',onDrag);
+    window.addEventListener('mouseup',stopDrag);
+  });
+
+  window.addEventListener('resize',()=>{
+    applySidebarWidth(sidebarWidth);
+    persistState();
+  });
+}
+
+function normalizeGroupState(rawGroup){
+  const type=rawGroup&&['symbol','pattern','linepattern','edgepoints'].includes(rawGroup.type)?rawGroup.type:'symbol';
+  const fallbackSrc=type==='symbol'?'poi_label':'natural';
+  const srcCandidate=(rawGroup&&rawGroup.src&&SRCS[rawGroup.src])?rawGroup.src:fallbackSrc;
+  const srcMeta=SRCS[srcCandidate];
+  const src=sourceSupportsGroupType(type,srcMeta)?srcCandidate:fallbackSrc;
+  const slots=Array.isArray(rawGroup&&rawGroup.slots)?rawGroup.slots.slice(0,3):[];
+  while(slots.length<3){
+    slots.push(emptySlotForType(type,slots.length));
+  }
+  return {
+    id:(rawGroup&&rawGroup.id)||('g'+Date.now()+'-'+Math.random().toString(36).slice(2,7)),
+    name:(rawGroup&&rawGroup.name)||defaultGroupNameForType(type),
+    type,
+    visible:!(rawGroup&&rawGroup.visible===false),
+    smoothScale:!!(rawGroup&&rawGroup.smoothScale===true),
+    opacity:normalizedOpacity({type,opacity:rawGroup&&rawGroup.opacity}),
+    lineGapPx:normalizedLineGapPx(rawGroup),
+    lineHeightScale:normalizedLineHeightScale(rawGroup),
+    lineOrganic:normalizedLineOrganic(rawGroup),
+    patternFadeEnabled:type==='pattern' ? normalizedPatternFadeEnabled(rawGroup) : false,
+    patternFadeWidthPx:normalizedPatternFadeWidthPx(rawGroup),
+    patternFadeOpacity:normalizedPatternFadeOpacity(rawGroup),
+    src,
+    typeValue:(rawGroup&&typeof rawGroup.typeValue==='string'&&rawGroup.typeValue.trim())?rawGroup.typeValue.trim():SRCS[src].defaultTypeValue,
+    subtypeValue:(rawGroup&&typeof rawGroup.subtypeValue==='string')?rawGroup.subtypeValue.trim():(SRCS[src].defaultSubtypeValue||''),
+    slots:slots.map(s=>{
+      const px=Math.max(1,Number(s&&s.px)||defaultSizeForGroupType(type));
+      return {
+        zMin:Number(s&&s.zMin)||0,
+        zMax:Number(s&&s.zMax)||0,
+        px,
+        pxMax:Math.max(1,Number(s&&s.pxMax)||px),
+        icon:(s&&typeof s.icon==='string'&&s.icon)?s.icon:null
+      };
+    })
+  };
+}
+
+function dataUrlToBlob(dataUrl){
+  if(!dataUrl||typeof dataUrl!=='string'||!dataUrl.includes(',')) return null;
+  const parts=dataUrl.split(',');
+  const meta=parts[0];
+  const bin=atob(parts.slice(1).join(','));
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  const mimeMatch=meta.match(/^data:([^;]+)/);
+  return new Blob([bytes],{type:(mimeMatch&&mimeMatch[1])||'application/octet-stream'});
+}
+
+function restorePoolIcon(name,dataUrl){
+  return new Promise(resolve=>{
+    if(!dataUrl){
+      resolve(null);
+      return;
+    }
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      c.width=img.naturalWidth;
+      c.height=img.naturalHeight;
+      c.getContext('2d').drawImage(img,0,0);
+      resolve([name,enrichPoolItemMetrics({canvas:c,w:img.naturalWidth,h:img.naturalHeight,dataUrl})]);
+    };
+    img.onerror=()=>resolve(null);
+    img.src=dataUrl;
+  });
+}
+
+async function restorePoolItem(name,item){
+  const originalDataUrl=(item&&item.originalDataUrl)||((item&&item.dataUrl)||'');
+  const currentDataUrl=(item&&item.dataUrl)||originalDataUrl;
+  const originalCanvas=await loadCanvasFromDataUrl(originalDataUrl);
+  if(!originalCanvas) return restorePoolIcon(name,currentDataUrl);
+  const color=normalizedIconColorConfig(item&&item.color);
+  const canvas=color ? recolorCanvas(originalCanvas,color) : (await loadCanvasFromDataUrl(currentDataUrl))||cloneCanvas(originalCanvas);
+  return [name,enrichPoolItemMetrics({
+    canvas,
+    originalCanvas,
+    w:canvas.width,
+    h:canvas.height,
+    dataUrl:color ? canvas.toDataURL('image/png') : currentDataUrl,
+    originalDataUrl,
+    color
+  })];
+}
+
+function readFileAsDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(reader.error||new Error('File could not be read'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImageFromDataUrl(dataUrl){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error('Sprite PNG could not be loaded'));
+    img.src=dataUrl;
+  });
+}
+
+function clearMapArtifacts(){
+  active.forEach(id=>{try{if(map.getLayer(id))map.removeLayer(id);}catch(e){}});
+  active=[];
+  clearGeneratedSources();
+  clearGeneratedVariantImages();
+  if(!ready) return;
+  groups.forEach(g=>g.slots.forEach(slot=>{
+    slot._sn=null;
+  }));
+  Object.keys(pool).forEach(name=>{
+    if(map.hasImage(name)){
+      try{map.removeImage(name);}catch(e){}
+    }
+  });
+}
+
+function clearAllSymbolsAndPatterns(){
+  clearMapArtifacts();
+  groups.forEach(g=>g.slots.forEach(slot=>{
+    slot.icon=null;
+    slot._sn=null;
+  }));
+  pool={};
+  dragged=null;
+  jsonOut=null;
+  json2xOut=null;
+  pngBlob=null;
+  png2xBlob=null;
+  spritePngDataUrl='';
+  sprite2xPngDataUrl='';
+
+  const fi=document.getElementById('fi');
+  const fij=document.getElementById('fij');
+  const dzInput=document.querySelector('#dz input[type="file"]');
+  if(fi) fi.value='';
+  if(fij) fij.value='';
+  if(dzInput) dzInput.value='';
+
+  renderPool();
+  renderGroups();
+  syncLegendState();
+  updateLegend();
+  genCode();
+  document.getElementById('dp').disabled=true;
+  document.getElementById('dj').disabled=true;
+  document.getElementById('dp2').disabled=true;
+  document.getElementById('dj2').disabled=true;
+  persistState();
+  ss('All symbols and patterns removed | Icon pool cleared','ok');
+}
+
+function sourceKeyFromImportedConfig(cfg,layerType){
+  const fallbackSrc=layerType==='symbol'?'poi_label':'natural';
+  const sourceLayer=(cfg&&typeof cfg.sourceLayer==='string')?cfg.sourceLayer:'';
+  if(layerType==='symbol'&&sourceLayer===AERODROME_LABEL_META.sourceLayer){
+    return 'poi_label';
+  }
+  if(SRCS[sourceLayer]){
+    const srcMeta=SRCS[sourceLayer];
+    if(sourceSupportsGroupType(layerType,srcMeta)) return sourceLayer;
+  }
+  const sourceName=(cfg&&typeof cfg.source==='string')?cfg.source:'';
+  const match=Object.entries(SRCS).find(([,src])=>
+    src.source===sourceName &&
+    src.sourceLayer===sourceLayer &&
+    sourceSupportsGroupType(layerType,src)
+  );
+  return match ? match[0] : fallbackSrc;
+}
+
+function groupsFromImportedSpriteJson(spriteJson){
+  const grouped=new Map();
+
+  Object.entries(spriteJson||{}).forEach(([iconName,meta])=>{
+    const configs=Array.isArray(meta&&meta.config)?meta.config:[];
+    configs.forEach(cfg=>{
+      const type=(cfg&&['symbol','pattern','linepattern','edgepoints'].includes(cfg.layerType))?cfg.layerType:'symbol';
+      const src=sourceKeyFromImportedConfig(cfg,type);
+      const typeValue=(cfg&&typeof cfg.typeValue==='string')?cfg.typeValue.trim():'';
+      const subtypeValue=(cfg&&typeof cfg.subtypeValue==='string')?cfg.subtypeValue.trim():'';
+      const smoothScale=!!(cfg&&cfg.smoothScale===true);
+      const opacity=normalizedOpacity({type,opacity:cfg&&cfg.opacity});
+      const lineGapPx=Math.max(0,Math.round(Number(cfg&&cfg.lineGapPx)||defaultLineGapPx()));
+      const lineHeightScale=clamp(Number(cfg&&cfg.lineHeightScale),0.2,2);
+      const lineOrganic=cfg&&typeof cfg.lineOrganic==='boolean' ? cfg.lineOrganic===true : defaultLineOrganic();
+      const patternFadeEnabled=type==='pattern' ? normalizedPatternFadeEnabled(cfg) : false;
+      const patternFadeWidthPx=normalizedPatternFadeWidthPx(cfg);
+      const patternFadeOpacity=normalizedPatternFadeOpacity(cfg);
+      const name=(cfg&&typeof cfg.group==='string'&&cfg.group.trim())?cfg.group.trim():defaultGroupNameForType(type);
+      const visible=!(cfg&&cfg.visible===false);
+      const key=[name,type,src,typeValue,subtypeValue,visible?'1':'0',smoothScale?'1':'0',opacity,lineGapPx,String(Number.isFinite(lineHeightScale)?lineHeightScale:defaultLineHeightScale()),lineOrganic?'1':'0',patternFadeEnabled?'1':'0',patternFadeWidthPx,patternFadeOpacity].join('|');
+
+      if(!grouped.has(key)){
+        grouped.set(key,{
+          id:'g'+Date.now()+'-'+Math.random().toString(36).slice(2,7),
+          name,
+          type,
+          visible,
+          smoothScale,
+          opacity,
+          lineGapPx,
+          lineHeightScale:Number.isFinite(lineHeightScale)?lineHeightScale:defaultLineHeightScale(),
+          lineOrganic,
+          patternFadeEnabled,
+          patternFadeWidthPx,
+          patternFadeOpacity,
+          src,
+          typeValue,
+          subtypeValue,
+          slots:[]
+        });
+      }
+
+      grouped.get(key).slots.push({
+        zMin:Number(cfg&&cfg.zoomMin)||0,
+        zMax:Number(cfg&&cfg.zoomMax)||0,
+        px:Math.max(1,Number(cfg&&cfg.sizePx)||defaultSizeForGroupType(type)),
+        pxMax:Math.max(1,Number(cfg&&cfg.sizePxMax)||Number(cfg&&cfg.sizePx)||defaultSizeForGroupType(type)),
+        icon:iconName
+      });
+    });
+  });
+
+  return Array.from(grouped.values()).map(rawGroup=>{
+    rawGroup.slots=rawGroup.slots.sort((a,b)=>a.zMin-b.zMin).slice(0,3);
+    return normalizeGroupState(rawGroup);
+  });
+}
+
+async function importSpriteBundle(spriteJson,atlasDataUrl){
+  if(!spriteJson||typeof spriteJson!=='object') throw new Error('sprite.json is invalid');
+  const atlasImg=await loadImageFromDataUrl(atlasDataUrl);
+  if(!atlasImg) throw new Error('sprite atlas image could not be loaded');
+  const nextPool={};
+
+  Object.entries(spriteJson).forEach(([iconName,meta])=>{
+    const sx=Number(meta&&meta.x);
+    const sy=Number(meta&&meta.y);
+    const sw=Number(meta&&meta.width);
+    const sh=Number(meta&&meta.height);
+    if(!iconName||!Number.isFinite(sx)||!Number.isFinite(sy)||!Number.isFinite(sw)||!Number.isFinite(sh)||sw<=0||sh<=0) return;
+
+    const c=document.createElement('canvas');
+    c.width=Math.round(sw);
+    c.height=Math.round(sh);
+    c.getContext('2d').drawImage(atlasImg,sx,sy,sw,sh,0,0,c.width,c.height);
+    const dataUrl=c.toDataURL('image/png');
+    nextPool[iconName]=enrichPoolItemMetrics({canvas:c,originalCanvas:cloneCanvas(c),w:c.width,h:c.height,dataUrl,originalDataUrl:dataUrl,color:null});
+  });
+
+  if(!Object.keys(nextPool).length) throw new Error('sprite.json does not contain valid sprite entries');
+
+  clearMapArtifacts();
+  pool=nextPool;
+  groups=groupsFromImportedSpriteJson(spriteJson);
+  jsonOut=spriteJson;
+  json2xOut=null;
+  spritePngDataUrl=atlasDataUrl;
+  sprite2xPngDataUrl='';
+  pngBlob=dataUrlToBlob(spritePngDataUrl);
+  png2xBlob=null;
+
+  if(!groups.length){
+    addGroup('symbol');
+    addGroup('pattern');
+  }else{
+    renderGroups();
+  }
+  renderPool();
+  genCode();
+  document.getElementById('dp').disabled=!pngBlob;
+  document.getElementById('dj').disabled=!jsonOut;
+  document.getElementById('dp2').disabled=true;
+  document.getElementById('dj2').disabled=true;
+  persistState();
+
+  const hasRenderableState=groups.some(g=>g.slots.some(s=>s.icon&&pool[s.icon]));
+  if(ready&&hasRenderableState){
+    await build();
+  }else{
+    syncLegendState();
+    updateLegend();
+    ss(Object.keys(pool).length+' icons imported from sprite'+(groups.length?'':' | no layer configuration found in sprite.json'),'ok');
+  }
+}
+
+async function importSavedSprite(files){
+  const selected=[...(files||[])];
+  const pngFile=selected.find(f=>/\.png$/i.test(f.name)||f.type==='image/png');
+  const jsonFile=selected.find(f=>/\.json$/i.test(f.name)||f.type==='application/json');
+  if(!pngFile||!jsonFile){
+    ss('Please select sprite.png and sprite.json together','err');
+    return;
+  }
+
+  ss('Importing sprite ...');
+  try{
+    const [spriteJsonText,atlasDataUrl]=await Promise.all([
+      jsonFile.text(),
+      readFileAsDataUrl(pngFile)
+    ]);
+    const spriteJson=JSON.parse(spriteJsonText);
+    await importSpriteBundle(spriteJson,atlasDataUrl);
+  }catch(e){
+    console.warn(e);
+    ss('Sprite import failed | '+(e&&e.message?e.message:String(e)),'err');
+  }
+}
+
+async function restorePersistedState(){
+  let saved;
+  try{
+    const raw=localStorage.getItem(APP_STATE_KEY);
+    if(!raw) return false;
+    saved=JSON.parse(raw);
+  }catch(e){
+    console.warn('localStorage restore failed',e);
+    return false;
+  }
+
+  const poolEntries=await Promise.all(
+    Object.entries((saved&&saved.pool)||{}).map(([name,item])=>restorePoolItem(name,item))
+  );
+  pool={};
+  poolEntries.forEach(entry=>{
+    if(entry) pool[entry[0]]=entry[1];
+  });
+
+  activeBasemapId=normalizeBasemapId(saved&&saved.activeBasemapId);
+  nativePoiVisible=!(saved&&saved.nativePoiVisible===false);
+  nativeAreaVisible=!(saved&&saved.nativeAreaVisible===false);
+  inspectorEnabled=!!(saved&&saved.inspectorEnabled===true);
+  poolCollapsed=!!(saved&&saved.poolCollapsed===true);
+  groups=Array.isArray(saved&&saved.groups)?saved.groups.map(normalizeGroupState):[];
+  jsonOut=(saved&&saved.jsonOut&&typeof saved.jsonOut==='object')?saved.jsonOut:null;
+  json2xOut=(saved&&saved.json2xOut&&typeof saved.json2xOut==='object')?saved.json2xOut:null;
+  spritePngDataUrl=(saved&&typeof saved.spritePngDataUrl==='string')?saved.spritePngDataUrl:'';
+  sprite2xPngDataUrl=(saved&&typeof saved.sprite2xPngDataUrl==='string')?saved.sprite2xPngDataUrl:'';
+  pngBlob=dataUrlToBlob(spritePngDataUrl);
+  png2xBlob=dataUrlToBlob(sprite2xPngDataUrl);
+  applySidebarWidth(saved&&saved.sidebarWidth);
+
+  updateHeaderNote();
+  renderBasemapControls();
+  renderNativePoiToggle();
+  renderNativeAreaToggle();
+  renderInspectToggle();
+  renderPoolSection();
+  if(!inspectorEnabled) clearInspectPanel();
+  renderPool();
+  renderGroups();
+  genCode();
+  document.getElementById('dp').disabled=!pngBlob;
+  document.getElementById('dj').disabled=!jsonOut;
+  document.getElementById('dp2').disabled=!png2xBlob;
+  document.getElementById('dj2').disabled=!json2xOut;
+  return true;
+}
+
+// File upload
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');onFiles(e.dataTransfer.files);});
+document.addEventListener('click',closeColorPopovers);
+
+function onFiles(files){
+  const pngs=[...files].filter(f=>f.name.endsWith('.png'));
+  if(!pngs.length) return;
+  let n=0;
+  pngs.forEach(file=>{
+    const name=file.name.replace(/\.png$/i,'');
+    const r=new FileReader();
+    r.onload=ev=>{
+      const img=new Image();
+      img.onload=()=>{
+        const c=document.createElement('canvas');
+        c.width=img.naturalWidth; c.height=img.naturalHeight;
+        c.getContext('2d').drawImage(img,0,0);
+        pool[name]=enrichPoolItemMetrics({canvas:c,originalCanvas:cloneCanvas(c),w:img.naturalWidth,h:img.naturalHeight,dataUrl:ev.target.result,originalDataUrl:ev.target.result,color:null});
+        if(++n===pngs.length){
+          renderPool();
+          persistState();
+          ss(Object.keys(pool).length+' icons in pool');
+        }
+      };
+      img.src=ev.target.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+function removePoolIcon(name){
+  if(!pool[name]) return;
+  delete pool[name];
+
+  groups.forEach(g=>{
+    g.slots.forEach(slot=>{
+      if(slot.icon!==name) return;
+      if(slot._sn&&ready&&map.hasImage(slot._sn)){
+        try{map.removeImage(slot._sn);}catch(e){}
+      }
+      slot.icon=null;
+      slot._sn=null;
+    });
+  });
+
+  if(ready&&map.hasImage(name)){
+    try{map.removeImage(name);}catch(e){}
+  }
+
+  renderPool();
+  renderGroups();
+  persistState();
+
+  const poolCount=Object.keys(pool).length;
+  if(ready&&poolCount){
+    build();
+    return;
+  }
+
+  active.forEach(id=>{try{if(map.getLayer(id))map.removeLayer(id);}catch(e){}});
+  active=[];
+  clearGeneratedVariantImages();
+  if(!poolCount){
+    jsonOut=null;
+    json2xOut=null;
+    pngBlob=null;
+    png2xBlob=null;
+    spritePngDataUrl='';
+    sprite2xPngDataUrl='';
+  }
+  document.getElementById('dp').disabled=!pngBlob;
+  document.getElementById('dj').disabled=!jsonOut;
+  document.getElementById('dp2').disabled=!png2xBlob;
+  document.getElementById('dj2').disabled=!json2xOut;
+  syncLegendState();
+  updateLegend();
+  genCode();
+  persistState();
+  ss(poolCount+' icons in pool',poolCount?'':'');
+}
+
+function refreshAfterPoolIconEdit(message){
+  closeColorPopovers();
+  renderPool();
+  renderGroups();
+  persistState();
+  if(ready&&Object.keys(pool).length){
+    build();
+  }else{
+    syncLegendState();
+    updateLegend();
+    genCode();
+    if(message) ss(message,'ok');
+  }
+}
+
+function closeColorPopovers(){
+  document.querySelectorAll('.color-pop').forEach(pop=>pop.remove());
+}
+
+function renderIconColorPopover(name,parent){
+  closeColorPopovers();
+  const item=pool[name];
+  if(!item) return;
+  const current=normalizedIconColorConfig(item.color)||{mode:'tint',hex:'#4f8f3a'};
+
+  const pop=document.createElement('div');
+  pop.className='color-pop';
+  pop.onmousedown=e=>e.stopPropagation();
+  pop.onclick=e=>e.stopPropagation();
+
+  const title=document.createElement('div');
+  title.className='color-pop-title';
+  title.textContent='Colour settings';
+
+  const row=document.createElement('div');
+  row.className='color-pop-row';
+
+  const colourField=document.createElement('div');
+  colourField.className='color-pop-field';
+  const colourLabel=document.createElement('label');
+  colourLabel.textContent='Colour';
+  const colorInput=document.createElement('input');
+  colorInput.type='color';
+  colorInput.value=current.hex;
+  colorInput.title='Choose symbol colour';
+  colourField.appendChild(colourLabel);
+  colourField.appendChild(colorInput);
+
+  const modeField=document.createElement('div');
+  modeField.className='color-pop-field';
+  const modeLabel=document.createElement('label');
+  modeLabel.textContent='Mode';
+  const modeSel=document.createElement('select');
+  [['tint','Tint'],['hue','Hue shift'],['mono','Monochrome']].forEach(([value,label])=>{
+    const option=document.createElement('option');
+    option.value=value;
+    option.textContent=label;
+    if(value===current.mode) option.selected=true;
+    modeSel.appendChild(option);
+  });
+  modeField.appendChild(modeLabel);
+  modeField.appendChild(modeSel);
+  row.appendChild(colourField);
+  row.appendChild(modeField);
+
+  const actionRow=document.createElement('div');
+  actionRow.className='color-pop-row';
+  const pickRow=document.createElement('div');
+  pickRow.className='color-pop-row';
+  const pickBtn=document.createElement('button');
+  pickBtn.type='button';
+  pickBtn.className='pick-map';
+  pickBtn.textContent='Pick from map';
+  pickBtn.title='Click a map area to sample its colour';
+  pickBtn.onclick=()=>{
+    beginMapColorPick(name,modeSel.value);
+  };
+  pickRow.appendChild(pickBtn);
+
+  const applyBtn=document.createElement('button');
+  applyBtn.type='button';
+  applyBtn.textContent='Apply';
+  applyBtn.onclick=()=>{
+    applyIconColor(name,{enabled:true,hex:colorInput.value,mode:modeSel.value});
+    refreshAfterPoolIconEdit('Icon color updated | '+name);
+  };
+
+  const resetBtn=document.createElement('button');
+  resetBtn.type='button';
+  resetBtn.className='reset';
+  resetBtn.textContent='Reset';
+  resetBtn.onclick=()=>{
+    resetIconColor(name);
+    refreshAfterPoolIconEdit('Icon color reset | '+name);
+  };
+  actionRow.appendChild(applyBtn);
+  actionRow.appendChild(resetBtn);
+
+  colorInput.oninput=()=>{
+    applyIconColor(name,{enabled:true,hex:colorInput.value,mode:modeSel.value});
+    parent.classList.add('has-color');
+    parent.style.setProperty('--icon-color',normalizeHexColor(colorInput.value));
+    const canvasEl=parent.querySelector('canvas');
+    if(canvasEl&&pool[name]){
+      canvasEl.width=pool[name].canvas.width;
+      canvasEl.height=pool[name].canvas.height;
+      canvasEl.getContext('2d').drawImage(pool[name].canvas,0,0);
+    }
+  };
+  colorInput.onchange=()=>{
+    persistState();
+    if(ready&&Object.keys(pool).length) build();
+  };
+  modeSel.onchange=()=>{
+    applyIconColor(name,{enabled:true,hex:colorInput.value,mode:modeSel.value});
+    refreshAfterPoolIconEdit('Icon color updated | '+name);
+  };
+
+  pop.appendChild(title);
+  pop.appendChild(row);
+  pop.appendChild(pickRow);
+  pop.appendChild(actionRow);
+  const rect=parent.getBoundingClientRect();
+  pop.style.position='fixed';
+  pop.style.left=Math.max(8,Math.min(window.innerWidth-198,rect.left-4))+'px';
+  pop.style.top=Math.max(8,Math.min(window.innerHeight-92,rect.bottom+4))+'px';
+  document.body.appendChild(pop);
+}
+
+function renderPool(){
+  const g=document.getElementById('pg'); g.innerHTML='';
+  Object.keys(pool).forEach(name=>{
+    const colorCfg=normalizedIconColorConfig(pool[name].color);
+    const item=document.createElement('div'); item.className='pi'+(colorCfg?' has-color':''); item.draggable=true;
+    if(colorCfg) item.style.setProperty('--icon-color',colorCfg.hex);
+    const c=pool[name].canvas.cloneNode();
+    c.width=pool[name].canvas.width; c.height=pool[name].canvas.height;
+    c.getContext('2d').drawImage(pool[name].canvas,0,0);
+    c.style.cssText='display:block;width:auto;height:auto;max-width:28px;max-height:28px;image-rendering:pixelated';
+    const lbl=document.createElement('span'); lbl.textContent=name;
+    const colorBtn=document.createElement('button');
+    colorBtn.type='button';
+    colorBtn.className='picolor';
+    colorBtn.title=colorCfg ? 'Edit icon color' : 'Colorize icon';
+    colorBtn.onmousedown=e=>e.stopPropagation();
+    colorBtn.onclick=e=>{
+      e.stopPropagation();
+      renderIconColorPopover(name,item);
+    };
+    const rm=document.createElement('button');
+    rm.type='button';
+    rm.className='pirm';
+    rm.textContent='x';
+    rm.title='Remove PNG';
+    rm.onmousedown=e=>e.stopPropagation();
+    rm.onclick=e=>{
+      e.stopPropagation();
+      removePoolIcon(name);
+    };
+    item.appendChild(colorBtn);
+    item.appendChild(rm);
+    item.appendChild(c);
+    item.appendChild(lbl);
+    item.addEventListener('dragstart',e=>{
+      dragged=name; item.classList.add('drag');
+      e.dataTransfer.effectAllowed='copy'; e.dataTransfer.setData('text/plain',name);
+    });
+    item.addEventListener('dragend',()=>item.classList.remove('drag'));
+    g.appendChild(item);
+  });
+  renderPoolSection();
+}
+
+function addGroup(type){
+  const id='g'+Date.now()+'-'+Math.random().toString(36).slice(2,7);
+  const n=groups.filter(g=>g.type===type).length+1;
+  const defSrc=type==='symbol'?'poi_label':'natural';
+  const defSize=defaultSizeForGroupType(type);
+  groups.push({id, name:defaultGroupNameForType(type)+' '+n, type, src:defSrc,
+    visible:true,
+    smoothScale:false,
+    opacity:defaultOpacityForType(type),
+    lineGapPx:defaultLineGapPx(),
+    lineHeightScale:defaultLineHeightScale(),
+    lineOrganic:(type==='linepattern'||type==='edgepoints')?defaultLineOrganic():false,
+    patternFadeEnabled:type==='pattern' ? defaultPatternFadeEnabled() : false,
+    patternFadeWidthPx:defaultPatternFadeWidthPx(),
+    patternFadeOpacity:defaultPatternFadeOpacity(),
+    typeValue:SRCS[defSrc].defaultTypeValue,
+    subtypeValue:SRCS[defSrc].defaultSubtypeValue||'',
+    slots:[
+      {zMin:0, zMax:12, px:defSize, pxMax:defSize, icon:null},
+      {zMin:12,zMax:16, px:defSize, pxMax:defSize, icon:null},
+      {zMin:16,zMax:22, px:defSize, pxMax:defSize, icon:null},
+    ]
+  });
+  persistState();
+  renderGroups();
+}
+
+function syncGroupRenderType(g,nextType){
+  const prevDefault=defaultSizeForGroupType(g.type);
+  const nextDefault=defaultSizeForGroupType(nextType);
+  g.type=nextType;
+  g.opacity=normalizedOpacity(g);
+  g.lineGapPx=normalizedLineGapPx(g);
+  g.lineHeightScale=normalizedLineHeightScale(g);
+  g.lineOrganic=(nextType==='linepattern'||nextType==='edgepoints') ? normalizedLineOrganic(g) : false;
+  g.patternFadeEnabled=nextType==='pattern' ? normalizedPatternFadeEnabled(g) : false;
+  g.patternFadeWidthPx=normalizedPatternFadeWidthPx(g);
+  g.patternFadeOpacity=normalizedPatternFadeOpacity(g);
+  if(!SRCS[g.src] || !sourceSupportsGroupType(nextType,SRCS[g.src])){
+    g.src=nextType==='symbol'?'poi_label':'natural';
+    g.typeValue=SRCS[g.src].defaultTypeValue;
+    g.subtypeValue=SRCS[g.src].defaultSubtypeValue||'';
+  }
+  g.slots.forEach(slot=>{
+    if(slot.px===prevDefault) slot.px=nextDefault;
+    if(!slot.pxMax||slot.pxMax===prevDefault) slot.pxMax=nextDefault;
+  });
+}
+
+function orderedGroupsForLayerBuild(){
+  return groups.slice().reverse();
+}
+
+function isTreeSymbolGroup(g){
+  if(!g||g.type!=='symbol') return false;
+  const srcKey=((g.src||'')+'').trim().toLowerCase();
+  const typeValue=((g.typeValue||'')+'').trim().toLowerCase();
+  const name=((g.name||'')+'').trim().toLowerCase();
+  if(srcKey==='trees_vienna'||srcKey==='trees_innsbruck') return true;
+  if(typeValue==='tree'||typeValue==='trees') return true;
+  if(name==='tree'||name==='trees') return true;
+  return false;
+}
+
+function isSubwayEntranceSymbolGroup(g){
+  if(!g||g.type!=='symbol') return false;
+  const typeValue=((g.typeValue||'')+'').trim().toLowerCase();
+  const subtypeValue=((g.subtypeValue||'')+'').trim().toLowerCase();
+  return typeValue==='entrance'&&subtypeValue==='subway_entrance';
+}
+
+function isBenchOrWasteSymbolGroup(g){
+  if(!g||g.type!=='symbol') return false;
+  const typeValue=((g.typeValue||'')+'').trim().toLowerCase();
+  const subtypeValue=((g.subtypeValue||'')+'').trim().toLowerCase();
+  return typeValue==='bench'||typeValue==='waste_basket'||subtypeValue==='waste_basket';
+}
+
+function avoidsNativeLabelCollisions(g){
+  return isSubwayEntranceSymbolGroup(g)||isBenchOrWasteSymbolGroup(g);
+}
+
+function symbolCollisionLayoutForGroup(g){
+  if(isTreeSymbolGroup(g)){
+    return {
+      iconAllowOverlap:false,
+      iconIgnorePlacement:true
+    };
+  }
+  if(avoidsNativeLabelCollisions(g)){
+    return {
+      iconAllowOverlap:false,
+      iconIgnorePlacement:false
+    };
+  }
+  return {
+    iconAllowOverlap:true,
+    iconIgnorePlacement:true
+  };
+}
+
+function orderedGroupsForMapBuild(){
+  const ordered=orderedGroupsForLayerBuild();
+  const preferred=[];
+  const treeGroups=[];
+  ordered.forEach(g=>{
+    if(isTreeSymbolGroup(g)) treeGroups.push(g);
+    else preferred.push(g);
+  });
+  return preferred.concat(treeGroups);
+}
+
+function moveGroup(fromIndex,toIndex){
+  if(fromIndex===toIndex||fromIndex<0||fromIndex>=groups.length||toIndex<0||toIndex>=groups.length) return;
+  const moved=groups.splice(fromIndex,1)[0];
+  groups.splice(toIndex,0,moved);
+  persistState();
+  renderGroups();
+  if(ready&&Object.keys(pool).length){
+    build();
+  }else{
+    syncLegendState();
+    updateLegend();
+    genCode();
+  }
+}
+
+function renderGroups(){
+  const wrap=document.getElementById('gs'); wrap.innerHTML='';
+  groups.forEach((g,gi)=>{
+    const card=document.createElement('div'); card.className='gc';
+
+    // Header
+    const hdr=document.createElement('div'); hdr.className='gh';
+    const opts=document.createElement('div'); opts.className='gopts-row';
+    const visBtn=document.createElement('button');
+    visBtn.type='button';
+    visBtn.className='gvis';
+    renderVisibilityButton(visBtn,g.visible!==false);
+    visBtn.onclick=()=>{
+      g.visible=g.visible===false;
+      renderVisibilityButton(visBtn,g.visible!==false);
+      persistState();
+      if(ready&&Object.keys(pool).length){
+        build();
+      }else{
+        syncLegendState();
+        updateLegend();
+      }
+    };
+
+    const interpBtn=document.createElement('button');
+    interpBtn.type='button';
+    interpBtn.className='gopt'+(g.smoothScale===true?' on':'');
+    interpBtn.textContent='Interp';
+    interpBtn.title=g.smoothScale===true ? 'Interpolated size across zoom levels' : 'Stepped size across zoom levels';
+    interpBtn.onclick=()=>{
+      g.smoothScale=!(g.smoothScale===true);
+      interpBtn.className='gopt'+(g.smoothScale===true?' on':'');
+      interpBtn.title=g.smoothScale===true ? 'Interpolated size across zoom levels' : 'Stepped size across zoom levels';
+      persistState();
+      if(ready&&Object.keys(pool).length){
+        build();
+      }
+    };
+
+    const modeSel=document.createElement('select');
+    modeSel.className='gmode '+(g.type==='symbol'?'bs':'bp');
+    [['symbol','Symbol'],['pattern','Pattern'],['linepattern','Line Pattern'],['edgepoints','Forest Edge']].forEach(([value,label])=>{
+      const o=document.createElement('option');
+      o.value=value;
+      o.textContent=label;
+      if(g.type===value) o.selected=true;
+      modeSel.appendChild(o);
+    });
+    modeSel.onchange=e=>{
+      syncGroupRenderType(g,e.target.value);
+      persistState();
+      renderGroups();
+    };
+
+    const sel=document.createElement('select'); sel.className='gsrc';
+    Object.entries(SRCS).forEach(([k,v])=>{
+      if(!sourceSupportsGroupType(g.type,v)) return;
+      const o=document.createElement('option');
+      o.value=k; o.textContent=v.lbl;
+      if(k===g.src) o.selected=true;
+      sel.appendChild(o);
+    });
+    sel.onchange=e=>{
+      g.src=e.target.value;
+      if(!g.typeValue) g.typeValue=(SRCS[g.src]&&SRCS[g.src].defaultTypeValue)||'';
+      if(!(SRCS[g.src]&&SRCS[g.src].subtypeField)){
+        g.subtypeValue='';
+      }else if(!g.subtypeValue){
+        g.subtypeValue=(SRCS[g.src]&&SRCS[g.src].defaultSubtypeValue)||'';
+      }
+      persistState();
+      renderGroups();
+    };
+
+    const srcMeta=sourceMetaForGroup(g);
+    const ti=document.createElement('input');
+    ti.className='gtype';
+    ti.type='text';
+    ti.value=g.typeValue||'';
+    ti.placeholder=srcMeta.typeField||'class';
+    ti.oninput=e=>{g.typeValue=e.target.value.trim().toLowerCase();persistState();};
+
+    const sti=document.createElement('input');
+    sti.className='gsubtype';
+    sti.type='text';
+    sti.value=g.subtypeValue||'';
+    sti.placeholder=srcMeta.subtypeField ? srcMeta.subtypeField+' opt.' : 'no subtype';
+    sti.disabled=!srcMeta.subtypeField;
+    sti.oninput=e=>{g.subtypeValue=e.target.value.trim().toLowerCase();persistState();};
+
+    const ni=document.createElement('input'); ni.className='gname'; ni.value=g.name;
+    ni.oninput=e=>{g.name=e.target.value;persistState();};
+
+    const upBtn=document.createElement('button');
+    upBtn.type='button';
+    upBtn.className='gord';
+    upBtn.textContent='↑';
+    upBtn.title='Move up and render above the groups below';
+    upBtn.disabled=gi===0;
+    upBtn.onclick=()=>moveGroup(gi,gi-1);
+
+    const downBtn=document.createElement('button');
+    downBtn.type='button';
+    downBtn.className='gord';
+    downBtn.textContent='↓';
+    downBtn.title='Move down and render below the groups above';
+    downBtn.disabled=gi===groups.length-1;
+    downBtn.onclick=()=>moveGroup(gi,gi+1);
+
+    const typeWrap=document.createElement('div');
+    typeWrap.className='gh-lineopt';
+    const typeLabel=document.createElement('label');
+    typeLabel.textContent=srcMeta.typeField||'class';
+    typeWrap.appendChild(typeLabel);
+    typeWrap.appendChild(ti);
+
+    const subtypeWrap=document.createElement('div');
+    subtypeWrap.className='gh-lineopt';
+    const subtypeLabel=document.createElement('label');
+    subtypeLabel.textContent=srcMeta.subtypeField||'sub';
+    subtypeWrap.appendChild(subtypeLabel);
+    subtypeWrap.appendChild(sti);
+
+    const opacityWrap=document.createElement('div');
+    opacityWrap.className='gh-lineopt';
+    const opacityLabel=document.createElement('label');
+    opacityLabel.textContent='opacity';
+    const opacityInput=document.createElement('input');
+    opacityInput.type='number';
+    opacityInput.min='0';
+    opacityInput.max='1';
+    opacityInput.step='0.05';
+    opacityInput.value=normalizedOpacity(g).toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+    opacityInput.title='Layer opacity from 0 transparent to 1 opaque';
+    opacityInput.onchange=e=>{
+      g.opacity=normalizedOpacity({type:g.type,opacity:Number(e.target.value)});
+      opacityInput.value=g.opacity.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+      persistState();
+      if(ready&&Object.keys(pool).length){
+        build();
+      }else{
+        updateLegend();
+      }
+    };
+    opacityWrap.appendChild(opacityLabel);
+    opacityWrap.appendChild(opacityInput);
+
+    let organicBtn=null;
+    let lineOptsWrap=null;
+    if(g.type==='linepattern'||g.type==='edgepoints'){
+      organicBtn=document.createElement('button');
+      organicBtn.type='button';
+      organicBtn.className='gopt'+(normalizedLineOrganic(g)?' on':'');
+      organicBtn.textContent='Organic';
+      organicBtn.title=normalizedLineOrganic(g) ? 'Organic spacing and subtle offsets are enabled' : 'Use regular spacing';
+      organicBtn.onclick=()=>{
+        g.lineOrganic=!normalizedLineOrganic(g);
+        organicBtn.className='gopt'+(normalizedLineOrganic(g)?' on':'');
+        organicBtn.title=normalizedLineOrganic(g) ? 'Organic spacing and subtle offsets are enabled' : 'Use regular spacing';
+        persistState();
+        if(ready&&Object.keys(pool).length){
+          build();
+        }else{
+          updateLegend();
+        }
+      };
+
+      lineOptsWrap=document.createElement('div');
+      lineOptsWrap.className='gh-lineopts';
+
+      const gapWrap=document.createElement('div');
+      gapWrap.className='gh-lineopt';
+      const gapLabel=document.createElement('label');
+      gapLabel.textContent='gap';
+      const gapInput=document.createElement('input');
+      gapInput.type='number';
+      gapInput.min='0';
+      gapInput.step='1';
+      gapInput.value=normalizedLineGapPx(g);
+      gapInput.placeholder='px';
+      gapInput.title='Gap between repeated line symbols in pixels';
+      gapInput.onchange=e=>{
+        g.lineGapPx=Math.max(0,Math.round(Number(e.target.value)||0));
+        gapInput.value=g.lineGapPx;
+        persistState();
+        if(ready&&Object.keys(pool).length){
+          build();
+        }else{
+          updateLegend();
+        }
+      };
+      gapWrap.appendChild(gapLabel);
+      gapWrap.appendChild(gapInput);
+
+      const heightWrap=document.createElement('div');
+      heightWrap.className='gh-lineopt';
+      const heightLabel=document.createElement('label');
+      heightLabel.textContent='height';
+      const heightInput=document.createElement('input');
+      heightInput.type='number';
+      heightInput.min='0.2';
+      heightInput.max='2';
+      heightInput.step='0.05';
+      heightInput.value=normalizedLineHeightScale(g).toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+      heightInput.title='Vertical scale for repeated line symbols';
+      heightInput.onchange=e=>{
+        g.lineHeightScale=normalizedLineHeightScale({lineHeightScale:Number(e.target.value)});
+        heightInput.value=g.lineHeightScale.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+        persistState();
+        if(ready&&Object.keys(pool).length){
+          build();
+        }else{
+          updateLegend();
+        }
+      };
+      heightWrap.appendChild(heightLabel);
+      heightWrap.appendChild(heightInput);
+
+      lineOptsWrap.appendChild(gapWrap);
+      lineOptsWrap.appendChild(heightWrap);
+    }
+
+    let patternFadeBtn=null;
+    let patternFadeOptsWrap=null;
+    if(g.type==='pattern'){
+      patternFadeBtn=document.createElement('button');
+      patternFadeBtn.type='button';
+      patternFadeBtn.className='gopt'+(normalizedPatternFadeEnabled(g)?' on':'');
+      patternFadeBtn.textContent='Fade';
+      patternFadeBtn.title=normalizedPatternFadeEnabled(g) ? 'Soft polygon edge is enabled' : 'Add a soft transparent edge mask';
+      patternFadeBtn.onclick=()=>{
+        g.patternFadeEnabled=!normalizedPatternFadeEnabled(g);
+        patternFadeBtn.className='gopt'+(normalizedPatternFadeEnabled(g)?' on':'');
+        patternFadeBtn.title=normalizedPatternFadeEnabled(g) ? 'Soft polygon edge is enabled' : 'Add a soft transparent edge mask';
+        if(patternFadeOptsWrap) patternFadeOptsWrap.style.display=normalizedPatternFadeEnabled(g)?'flex':'none';
+        persistState();
+        if(ready&&Object.keys(pool).length){
+          build();
+        }else{
+          updateLegend();
+        }
+      };
+
+      patternFadeOptsWrap=document.createElement('div');
+      patternFadeOptsWrap.className='gh-lineopts';
+      patternFadeOptsWrap.style.display=normalizedPatternFadeEnabled(g)?'flex':'none';
+
+      const fadeWidthWrap=document.createElement('div');
+      fadeWidthWrap.className='gh-lineopt';
+      const fadeWidthLabel=document.createElement('label');
+      fadeWidthLabel.textContent='fade px';
+      const fadeWidthInput=document.createElement('input');
+      fadeWidthInput.type='number';
+      fadeWidthInput.min='4';
+      fadeWidthInput.max='160';
+      fadeWidthInput.step='1';
+      fadeWidthInput.value=normalizedPatternFadeWidthPx(g);
+      fadeWidthInput.title='Width of the soft inner edge in screen pixels';
+      fadeWidthInput.onchange=e=>{
+        g.patternFadeWidthPx=normalizedPatternFadeWidthPx({patternFadeWidthPx:Number(e.target.value)});
+        fadeWidthInput.value=g.patternFadeWidthPx;
+        persistState();
+        if(ready&&Object.keys(pool).length){
+          build();
+        }else{
+          updateLegend();
+        }
+      };
+      fadeWidthWrap.appendChild(fadeWidthLabel);
+      fadeWidthWrap.appendChild(fadeWidthInput);
+
+      const fadeOpacityWrap=document.createElement('div');
+      fadeOpacityWrap.className='gh-lineopt';
+      const fadeOpacityLabel=document.createElement('label');
+      fadeOpacityLabel.textContent='edge';
+      const fadeOpacityInput=document.createElement('input');
+      fadeOpacityInput.type='number';
+      fadeOpacityInput.min='0';
+      fadeOpacityInput.max='1';
+      fadeOpacityInput.step='0.05';
+      fadeOpacityInput.value=normalizedPatternFadeOpacity(g).toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+      fadeOpacityInput.title='Strength of the soft edge mask';
+      fadeOpacityInput.onchange=e=>{
+        g.patternFadeOpacity=normalizedPatternFadeOpacity({patternFadeOpacity:Number(e.target.value)});
+        fadeOpacityInput.value=g.patternFadeOpacity.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+        persistState();
+        if(ready&&Object.keys(pool).length){
+          build();
+        }else{
+          updateLegend();
+        }
+      };
+      fadeOpacityWrap.appendChild(fadeOpacityLabel);
+      fadeOpacityWrap.appendChild(fadeOpacityInput);
+
+      patternFadeOptsWrap.appendChild(fadeWidthWrap);
+      patternFadeOptsWrap.appendChild(fadeOpacityWrap);
+    }
+    const rm=document.createElement('button'); rm.className='grm'; rm.textContent='x';
+    rm.onclick=()=>{groups.splice(gi,1);persistState();renderGroups();};
+    hdr.appendChild(visBtn);
+    hdr.appendChild(interpBtn);
+    hdr.appendChild(modeSel); hdr.appendChild(sel);
+    if(g.type!=='linepattern') hdr.appendChild(ni);
+    hdr.appendChild(upBtn);
+    hdr.appendChild(downBtn);
+    hdr.appendChild(rm);
+
+    opts.appendChild(typeWrap);
+    if(srcMeta.subtypeField) opts.appendChild(subtypeWrap);
+    opts.appendChild(opacityWrap);
+    if(patternFadeBtn) opts.appendChild(patternFadeBtn);
+    if(patternFadeOptsWrap) opts.appendChild(patternFadeOptsWrap);
+    if(organicBtn) opts.appendChild(organicBtn);
+    if(lineOptsWrap) opts.appendChild(lineOptsWrap);
+
+    // Slot column headers
+    const sh=document.createElement('div'); sh.className='sh';
+    ['Level 1','Level 2','Level 3'].forEach(t=>{
+      const h=document.createElement('div'); h.className='sh-col'; h.textContent=t;
+      sh.appendChild(h);
+    });
+
+    // Slots body - always 3
+    const sb=document.createElement('div'); sb.className='sb';
+    g.slots.forEach((slot,si)=>{
+      const sd=document.createElement('div'); sd.className='sl';
+      const sfs=document.createElement('div'); sfs.className='sfs';
+
+      function mf(lbl,val,unit,cb){
+        const row=document.createElement('div'); row.className='sf';
+        const l=document.createElement('label'); l.textContent=lbl;
+        const inp=document.createElement('input'); inp.type='number'; inp.value=val;
+        inp.addEventListener('change',e=>cb(parseFloat(e.target.value)||0));
+        const u=document.createElement('span'); u.className='u'; u.textContent=unit;
+        row.appendChild(l); row.appendChild(inp); row.appendChild(u);
+        return row;
+      }
+
+      sfs.appendChild(mf('min Z:',slot.zMin,'',v=>{slot.zMin=v;persistState();}));
+      sfs.appendChild(mf('max Z:',slot.zMax,'',v=>{slot.zMax=v;persistState();}));
+      sfs.appendChild(mf('min size:',slot.px,'px',v=>{slot.px=Math.max(1,v);if(!slot.pxMax)slot.pxMax=slot.px;persistState();}));
+      sfs.appendChild(mf('max size:',slot.pxMax||slot.px,'px',v=>{slot.pxMax=Math.max(1,v);persistState();}));
+      sd.appendChild(sfs);
+
+      if(slot.icon&&pool[slot.icon]){
+        const iw=document.createElement('div'); iw.className='siw';
+        const c=pool[slot.icon].canvas.cloneNode();
+        c.width=pool[slot.icon].canvas.width; c.height=pool[slot.icon].canvas.height;
+        c.getContext('2d').drawImage(pool[slot.icon].canvas,0,0);
+        c.style.cssText='display:block;width:auto;height:auto;max-width:30px;max-height:30px;image-rendering:pixelated';
+        const nm=document.createElement('span'); nm.textContent=slot.icon;
+        const sr=document.createElement('div'); sr.className='sirm'; sr.textContent='x';
+        sr.onclick=()=>{slot.icon=null;persistState();renderGroups();};
+        iw.appendChild(c); iw.appendChild(nm); iw.appendChild(sr); sd.appendChild(iw);
+      }else{
+        const emp=document.createElement('div'); emp.className='semp';
+        emp.textContent=g.type==='symbol' ? 'Drop icon' : g.type==='linepattern' ? 'Drop line symbol' : g.type==='edgepoints' ? 'Drop tree symbol' : 'Drop pattern';
+        sd.appendChild(emp);
+      }
+
+      sd.addEventListener('dragover',e=>{e.preventDefault();sd.classList.add('over');});
+      sd.addEventListener('dragleave',()=>sd.classList.remove('over'));
+      sd.addEventListener('drop',e=>{
+        e.preventDefault(); sd.classList.remove('over');
+        const name=e.dataTransfer.getData('text/plain')||dragged;
+        if(name&&pool[name]){slot.icon=name;dragged=null;persistState();renderGroups();}
+      });
+      sb.appendChild(sd);
+    });
+
+    card.appendChild(hdr); card.appendChild(opts); card.appendChild(sh); card.appendChild(sb);
+    wrap.appendChild(card);
+  });
+}
+
+function sourceMetaForGroup(g){
+  const fallbackSrc=g.type==='symbol'?'poi_label':'natural';
+  const typeValue=(g&&typeof g.typeValue==='string')?g.typeValue.trim().toLowerCase():'';
+  if(g.type==='symbol'&&(AERODROME_LABEL_CLASSES.has(typeValue)||AERODROME_LABEL_ALIASES.has(typeValue))) return AERODROME_LABEL_META;
+  const srcMeta=SRCS[g.src];
+  if(srcMeta && sourceSupportsGroupType(g.type,srcMeta)) return srcMeta;
+  return SRCS[fallbackSrc];
+}
+
+function typeFilterForGroup(g){
+  const srcMeta=sourceMetaForGroup(g);
+  const typeField=srcMeta.typeField||'type';
+  const subtypeField=srcMeta.subtypeField||'';
+  const typeValue=(g.typeValue||'').trim().toLowerCase();
+  if(!typeValue) return null;
+  const subtypeValue=(g.subtypeValue||'').trim().toLowerCase();
+  if(srcMeta.sourceLayer===AERODROME_LABEL_META.sourceLayer&&AERODROME_LABEL_ALIASES.has(typeValue)){
+    return ['has',typeField];
+  }
+  const filterExpr=['==',['get',typeField],typeValue];
+  return (subtypeField&&subtypeValue) ? ['all',filterExpr,['==',['get',subtypeField],subtypeValue]] : filterExpr;
+}
+
+function layerDefinitionForGroup(id,g,src,filterExpr,oMin,oMax,layout,paint){
+  const def={
+    id,
+    type:(g.type==='symbol'||g.type==='edgepoints') ? 'symbol' : g.type==='linepattern' ? 'line' : 'fill',
+    source:src.source,
+    minzoom:oMin,
+    maxzoom:oMax,
+    layout
+  };
+  if(src.sourceLayer) def['source-layer']=src.sourceLayer;
+  if(filterExpr) def.filter=filterExpr;
+  if(paint) def.paint=paint;
+  return def;
+}
+
+function previewCanvasForIcon(iconName,maxW,maxH){
+  const src=pool[iconName]&&pool[iconName].canvas;
+  if(!src) return null;
+  const c=src.cloneNode();
+  c.width=src.width;
+  c.height=src.height;
+  c.getContext('2d').drawImage(src,0,0);
+  c.style.cssText='display:block;width:auto;height:auto;max-width:'+maxW+'px;max-height:'+maxH+'px;image-rendering:pixelated';
+  return c;
+}
+
+function patternSwatchForIcon(iconName){
+  const src=pool[iconName]&&pool[iconName].canvas;
+  if(!src) return null;
+  const c=document.createElement('canvas');
+  c.width=30;
+  c.height=24;
+  const ctx=c.getContext('2d');
+  const pattern=ctx.createPattern(src,'repeat');
+  if(pattern){
+    ctx.fillStyle=pattern;
+    ctx.fillRect(0,0,c.width,c.height);
+  }else{
+    ctx.drawImage(src,0,0,Math.min(src.width,c.width),Math.min(src.height,c.height));
+  }
+  c.style.cssText='display:block;width:30px;height:24px;image-rendering:pixelated';
+  return c;
+}
+
+function linePatternSwatchForIcon(iconName,lineGapPx,lineHeightScale,lineOrganic,variantSeed){
+  const src=pool[iconName]&&pool[iconName].canvas;
+  if(!src) return null;
+  const base=derivedLinePatternCanvas(src,20,lineGapPx,lineHeightScale,lineOrganic,variantSeed);
+  const c=document.createElement('canvas');
+  c.width=30;
+  c.height=20;
+  const ctx=c.getContext('2d');
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(base,0,0,c.width,c.height);
+  c.style.cssText='display:block;width:30px;height:20px;image-rendering:pixelated';
+  return c;
+}
+
+function symbolSizeValue(slot,tileSizes,useMax=false){
+  const px=useMax ? (slot.pxMax||slot.px) : slot.px;
+  return px/(tileSizes[slot.icon]?tileSizes[slot.icon].w:pool[slot.icon].w);
+}
+
+function symbolSizeExpression(valid,g,tileSizes){
+  if(g.smoothScale===true){
+    const expr=['interpolate',['linear'],['zoom']];
+    valid.forEach(slot=>{
+      const startZ=Number(slot.zMin)||0;
+      const endZ=Number(slot.zMax)||startZ;
+      const startSize=symbolSizeValue(slot,tileSizes,false);
+      const endSize=symbolSizeValue(slot,tileSizes,true);
+      const lastZ=expr.length>3?expr[expr.length-2]:null;
+      if(lastZ===startZ){
+        expr[expr.length-1]=startSize;
+      }else if(lastZ===null||startZ>lastZ){
+        expr.push(startZ,startSize);
+      }
+      const nextLastZ=expr.length>3?expr[expr.length-2]:null;
+      if(endZ>nextLastZ) expr.push(endZ,endSize);
+    });
+    if(expr.length<7) return symbolSizeValue(valid[0],tileSizes);
+    return expr;
+  }
+  if(valid.length===1) return symbolSizeValue(valid[0],tileSizes);
+  return stepExpression(
+    symbolSizeValue(valid[0],tileSizes),
+    valid.slice(1).map(slot=>({zoom:Number(slot.zMin)||0,value:symbolSizeValue(slot,tileSizes)}))
+  );
+}
+
+function syncLegendState(){
+  legendState=groups.map(g=>{
+    const src=sourceMetaForGroup(g);
+    const slots=g.slots
+      .filter(s=>s.icon&&pool[s.icon])
+      .map(s=>({zMin:Number(s.zMin)||0,zMax:Number(s.zMax)||0,icon:s.icon}))
+      .sort((a,b)=>a.zMin-b.zMin);
+    return {
+      id:g.id,
+      name:g.name,
+      type:g.type,
+      visible:g.visible!==false,
+      sourceLayer:src.sourceLayer,
+      typeValue:(g.typeValue||'').trim(),
+      subtypeValue:(g.subtypeValue||'').trim(),
+      slots
+    };
+  }).filter(g=>g.visible!==false&&g.slots.length&&g.typeValue);
+}
+
+function legendSlotForZoom(slots,zoom){
+  let fallback=null;
+  for(let i=0;i<slots.length;i++){
+    const slot=slots[i];
+    if(!fallback) fallback=slot;
+    if(zoom>=slot.zMin&&zoom<=slot.zMax) return slot;
+    if(zoom>=slot.zMin) fallback=slot;
+  }
+  return fallback;
+}
+
+function updateLegend(){
+  const legend=document.getElementById('legend');
+  if(!legend) return;
+  if(!legendState.length||!ready){
+    legend.innerHTML='';
+    legend.style.display='none';
+    return;
+  }
+
+  const z=map.getZoom();
+  legend.innerHTML='';
+  const title=document.createElement('div');
+  title.className='legend-title';
+  title.textContent='Legend';
+  legend.appendChild(title);
+
+  let rowCount=0;
+  legendState.forEach(g=>{
+    const slot=legendSlotForZoom(g.slots,z);
+    if(!slot||!pool[slot.icon]) return;
+
+    const row=document.createElement('div');
+    row.className='legend-row';
+
+    const swatch=document.createElement('div');
+    swatch.className='legend-swatch';
+    const iconCanvas=g.type==='pattern' ? patternSwatchForIcon(slot.icon) : g.type==='linepattern' ? linePatternSwatchForIcon(slot.icon,g.lineGapPx,g.lineHeightScale,g.lineOrganic,g.id) : previewCanvasForIcon(slot.icon,26,20);
+    if(iconCanvas) swatch.appendChild(iconCanvas);
+
+    const meta=document.createElement('div');
+    meta.className='legend-meta';
+
+    const name=document.createElement('div');
+    name.className='legend-name';
+    name.textContent=g.typeValue;
+
+    const filter=document.createElement('div');
+    filter.className='legend-filter';
+    const srcMeta=sourceMetaForGroup(g);
+    filter.textContent=(srcMeta.subtypeField&&g.subtypeValue) ? srcMeta.subtypeField+'='+g.subtypeValue : '';
+
+    meta.appendChild(name);
+    if(filter.textContent) meta.appendChild(filter);
+    row.appendChild(swatch);
+    row.appendChild(meta);
+    legend.appendChild(row);
+    rowCount++;
+  });
+
+  if(!rowCount){
+    legend.innerHTML='';
+    legend.style.display='none';
+    return;
+  }
+  legend.style.display='block';
+}
+
+function beforeLayerForGroup(g){
+  const src=sourceMetaForGroup(g);
+  const firstSymbol=(map.getStyle().layers||[]).find(layer=>layer.type==='symbol');
+  if(g.type==='symbol'&&avoidsNativeLabelCollisions(g)){
+    return undefined;
+  }
+  if((g.type==='symbol'||g.type==='edgepoints'||g.type==='linepattern')&&firstSymbol&&map.getLayer(firstSymbol.id)){
+    return firstSymbol.id;
+  }
+  if(src.beforeId && map.getLayer(src.beforeId)) return src.beforeId;
+  if(Array.isArray(src.beforeIdCandidates)){
+    const beforeId=src.beforeIdCandidates.find(id=>map.getLayer(id));
+    if(beforeId) return beforeId;
+  }
+  if(Array.isArray(src.beforeSourceLayers)){
+    const beforeLayer=(map.getStyle().layers||[]).find(layer=>src.beforeSourceLayers.includes(layer['source-layer']));
+    if(beforeLayer&&map.getLayer(beforeLayer.id)) return beforeLayer.id;
+  }
+  if(src.drawBelowLabels===true){
+    if(firstSymbol&&map.getLayer(firstSymbol.id)) return firstSymbol.id;
+  }
+  if(src.pt) return undefined;
+  return firstSymbol&&map.getLayer(firstSymbol.id) ? firstSymbol.id : undefined;
+}
+
+function canvasToBlob(canvas){
+  return new Promise((resolve,reject)=>{
+    canvas.toBlob(blob=>blob ? resolve(blob) : reject(new Error('Sprite PNG could not be created')),'image/png');
+  });
+}
+
+function blobToDataUrl(blob){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(reader.error||new Error('Sprite PNG could not be read'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function uploadSpriteToServer(spriteJson,spriteCanvas,sprite2xJson,sprite2xCanvas){
+  const spriteBlob=await canvasToBlob(spriteCanvas);
+  spritePngDataUrl=await blobToDataUrl(spriteBlob);
+  png2xBlob=sprite2xCanvas ? await canvasToBlob(sprite2xCanvas) : null;
+  sprite2xPngDataUrl=png2xBlob ? await blobToDataUrl(png2xBlob) : '';
+  const payload={
+    spriteJson,
+    spritePngDataUrl,
+    sprite2xJson,
+    sprite2xPngDataUrl
+  };
+  const res=await fetch(SPRITE_UPLOAD_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  if(!res.ok){
+    const msg=await res.text();
+    throw new Error('Sprite upload failed: '+(msg||res.status));
+  }
+  return spriteBlob;
+}
+
+async function build(){
+  if(!Object.keys(pool).length){ss('No icons in pool','err');return;}
+  if(!ready){ss('Map is not ready yet','err');return;}
+
+  const PAD=8, names=Object.keys(pool);
+
+  // Remove previous preview layers before refreshing runtime images.
+  active.forEach(id=>{try{if(map.getLayer(id))map.removeLayer(id);}catch(e){}});
+  active=[];
+  clearGeneratedSources();
+  clearGeneratedVariantImages();
+
+  // Pre-compute tile sizes (scale to largest configured sizePx per icon)
+  const tileSizes={};
+  names.forEach(name=>{
+    let sz=1, used=false;
+    groups.forEach(g=>g.slots.forEach(s=>{
+      if(s.icon===name){
+        used=true;
+        sz=Math.max(sz,s.px,s.pxMax||s.px);
+      }
+    }));
+    if(!used) sz=pool[name].w;
+    const ic=pool[name];
+    tileSizes[name]={w:sz, h:Math.round(sz*(ic.h/ic.w))};
+  });
+  const tw=names.reduce((s,n)=>s+tileSizes[n].w+PAD,0);
+  const mh=Math.max(...names.map(n=>tileSizes[n].h));
+  const cv=document.createElement('canvas');
+  cv.width=Math.max(tw,1); cv.height=Math.max(mh,1);
+  const ctx=cv.getContext('2d');
+  const cv2x=document.createElement('canvas');
+  cv2x.width=Math.max(tw*2,1); cv2x.height=Math.max(mh*2,1);
+  const ctx2x=cv2x.getContext('2d');
+  const jout={};
+  const jout2x={};
+  let x=0;
+
+  names.forEach(name=>{
+    const ic=pool[name];
+    const tileW=tileSizes[name].w, tileH=tileSizes[name].h;
+    ctx.drawImage(ic.canvas,x,0,tileW,tileH);
+    const cfg=[];
+    groups.forEach(g=>g.slots.forEach(s=>{
+      if(s.icon===name){
+        const src=sourceMetaForGroup(g);
+        cfg.push({
+          group:g.name,
+          layerType:g.type,
+          visible:g.visible!==false,
+          smoothScale:g.smoothScale===true,
+          opacity:normalizedOpacity(g),
+          lineGapPx:normalizedLineGapPx(g),
+          lineHeightScale:normalizedLineHeightScale(g),
+          lineOrganic:normalizedLineOrganic(g),
+          patternFadeEnabled:normalizedPatternFadeEnabled(g),
+          patternFadeWidthPx:normalizedPatternFadeWidthPx(g),
+          patternFadeOpacity:normalizedPatternFadeOpacity(g),
+          source:src.source,
+          sourceLayer:src.sourceLayer,
+          typeValue:(g.typeValue||'').trim(),
+          subtypeValue:(g.subtypeValue||'').trim(),
+          zoomMin:s.zMin,
+          zoomMax:s.zMax,
+          sizePx:s.px,
+          sizePxMax:s.pxMax||s.px
+        });
+      }
+    }));
+    jout[name]={x,y:0,width:tileW,height:tileH,pixelRatio:1};
+    if(cfg.length) jout[name].config=cfg;
+    const x2=x*2, tileW2=tileW*2, tileH2=tileH*2;
+    ctx2x.drawImage(ic.canvas,x2,0,tileW2,tileH2);
+    jout2x[name]={x:x2,y:0,width:tileW2,height:tileH2,pixelRatio:2};
+    if(cfg.length) jout2x[name].config=cfg;
+    x+=tileW+PAD;
+  });
+  jsonOut=jout;
+  json2xOut=jout2x;
+
+  // Register images - ImageData with premultipliedAlpha:false (synchronous, no size mismatch)
+  names.forEach(name=>{
+    if(map.hasImage(name)) try{map.removeImage(name);}catch(e){}
+    const inf=jout[name];
+    if(!inf.width||!inf.height) return;
+    const ic2=document.createElement('canvas');
+    ic2.width=inf.width; ic2.height=inf.height;
+    ic2.getContext('2d').drawImage(pool[name].canvas,0,0,inf.width,inf.height);
+    const imgData=ic2.getContext('2d').getImageData(0,0,inf.width,inf.height);
+    try{
+      map.addImage(name,
+        {width:inf.width,height:inf.height,data:imgData.data},
+        {premultipliedAlpha:false}
+      );
+    }catch(e){console.warn(name,e);}
+  });
+
+  let sc=0,pc=0,lc=0,ec=0,skipped=0;
+  orderedGroupsForMapBuild().forEach(g=>{
+    const valid=g.slots.filter(s=>s.icon&&pool[s.icon]).sort((a,b)=>a.zMin-b.zMin);
+    if(!valid.length)return;
+    const src=sourceMetaForGroup(g);
+    const filterExpr=typeFilterForGroup(g);
+    const layerVisibility=g.visible===false?'none':'visible';
+    const opacity=normalizedOpacity(g);
+    if(!filterExpr){
+      skipped++;
+      return;
+    }
+    const oMin=Math.min(...valid.map(s=>s.zMin));
+    const oMax=Math.max(...valid.map(s=>s.zMax));
+
+    if(g.type==='symbol'){
+      const symbolCollision=symbolCollisionLayoutForGroup(g);
+      const ie=stepExpression(valid[0].icon,valid.slice(1).map(s=>({zoom:Number(s.zMin)||0,value:s.icon})));
+      // icon-size = desired display px / sprite tile px (tileW from tileSizes)
+      const se=symbolSizeExpression(valid,g,tileSizes);
+      const lid='sym-'+g.id;
+      try{
+        map.addLayer(layerDefinitionForGroup(lid,g,src,filterExpr,oMin,oMax,{
+          'visibility':layerVisibility,
+          'icon-image':ie,
+          'icon-size':se,
+          'icon-anchor':'center',
+          'icon-padding':0,
+          'icon-allow-overlap':symbolCollision.iconAllowOverlap,
+          'icon-ignore-placement':symbolCollision.iconIgnorePlacement
+        },{
+          'icon-opacity':opacity
+        }),beforeLayerForGroup(g));
+        active.push(lid); sc++;
+      }catch(e){console.warn(lid,e);}
+
+    }else if(g.type==='pattern'){
+      const pe=patternImageExpression(valid,g,'pattern');
+      const lid='pat-'+g.id;
+      const fadeSourceId='fade-src-'+g.id;
+      const fadeLayerId='fade-'+g.id;
+      try{
+        map.addLayer(layerDefinitionForGroup(lid,g,src,filterExpr,oMin,oMax,{'visibility':layerVisibility},{
+          'fill-pattern':pe,
+          'fill-opacity':opacity
+        }),beforeLayerForGroup(g));
+        active.push(lid); pc++;
+        if(normalizedPatternFadeEnabled(g)&&src.sourceLayer){
+          if(map.getSource(fadeSourceId)) map.removeSource(fadeSourceId);
+          map.addSource(fadeSourceId,{type:'geojson',data:patternFadeFeatureCollection(g,src,filterExpr)});
+          activeGeneratedSourceIds.push(fadeSourceId);
+          map.addLayer({
+            id:fadeLayerId,
+            type:'fill',
+            source:fadeSourceId,
+            minzoom:oMin,
+            maxzoom:oMax,
+            layout:{'visibility':layerVisibility},
+            paint:{
+              'fill-color':'#f5f4ec',
+              'fill-opacity':patternFadeOpacityExpression(g),
+              'fill-antialias':true
+            }
+          },beforeLayerForGroup(g));
+          active.push(fadeLayerId);
+          patternFadeRenderers.push({sourceId:fadeSourceId,group:g,src,filterExpr});
+        }
+      }catch(e){console.warn(lid,e);}
+    }else if(g.type==='linepattern'){
+      const pe=patternImageExpression(valid,g,'linepattern');
+      const lid='linepat-'+g.id;
+      try{
+        map.addLayer(layerDefinitionForGroup(lid,g,src,filterExpr,oMin,oMax,{
+          'visibility':layerVisibility,
+          'line-cap':'round',
+          'line-join':'round'
+        },{
+          'line-pattern':pe,
+          'line-width':lineWidthExpression(valid,g),
+          'line-opacity':opacity
+        }),beforeLayerForGroup(g));
+        active.push(lid); lc++;
+      }catch(e){console.warn(lid,e);}
+    }else{
+      const sourceId='edge-src-'+g.id;
+      const lid='edge-'+g.id;
+      const edgeData=edgePointFeatureCollection(g,valid,src,filterExpr);
+      const ie=stepExpression(valid[0].icon,valid.slice(1).map(s=>({zoom:Number(s.zMin)||0,value:s.icon})));
+      const se=symbolSizeExpression(edgePointSizeSlots(valid,g),g,tileSizes);
+      try{
+        if(map.getSource(sourceId)) map.removeSource(sourceId);
+        map.addSource(sourceId,{type:'geojson',data:edgeData});
+        activeGeneratedSourceIds.push(sourceId);
+        map.addLayer({
+          id:lid,
+          type:'symbol',
+          source:sourceId,
+          minzoom:oMin,
+          maxzoom:oMax,
+          layout:{
+            'visibility':layerVisibility,
+            'icon-image':ie,
+            'icon-size':se,
+            'icon-anchor':'center',
+            'icon-padding':0,
+            'icon-allow-overlap':true,
+            'icon-ignore-placement':true
+          },
+          paint:{
+            'icon-opacity':opacity
+          }
+        },beforeLayerForGroup(g));
+        active.push(lid);
+        edgePointRenderers.push({sourceId,group:g,valid,src,filterExpr});
+        ec++;
+      }catch(e){console.warn(lid,e);}
+    }
+  });
+
+  let spriteUploadOk=true;
+  try{
+    pngBlob=await uploadSpriteToServer(jsonOut,cv,jout2x,cv2x);
+  }catch(e){
+    spriteUploadOk=false;
+    console.warn(e);
+    try{
+      pngBlob=await canvasToBlob(cv);
+      spritePngDataUrl=await blobToDataUrl(pngBlob);
+      png2xBlob=await canvasToBlob(cv2x);
+      sprite2xPngDataUrl=await blobToDataUrl(png2xBlob);
+    }catch(err){console.warn(err);}
+  }
+  document.getElementById('dp').disabled=!pngBlob;
+  document.getElementById('dj').disabled=false;
+  document.getElementById('dp2').disabled=!png2xBlob;
+  document.getElementById('dj2').disabled=!json2xOut;
+  persistState();
+  syncLegendState();
+  updateLegend();
+  applyNativePoiVisibility();
+
+  genCode();
+
+  // Warn if current zoom is outside all active layer ranges
+  const curZ = map.getZoom();
+  let inRange = false;
+  orderedGroupsForMapBuild().forEach(g=>{
+    if(g.visible===false) return;
+    const v=g.slots.filter(s=>s.icon&&pool[s.icon]);
+    if(!v.length) return;
+    const oMin=Math.min(...v.map(s=>s.zMin));
+    const oMax=Math.max(...v.map(s=>s.zMax));
+    if(curZ>=oMin && curZ<=oMax) inRange=true;
+  });
+  const statusWarn = !inRange && groups.some(g=>g.visible!==false&&g.slots.some(s=>s.icon)) ? ` | Zoom ${curZ.toFixed(1)} outside all zoom ranges` : '';
+  const skipWarn = skipped ? ` | ${skipped} group(s) skipped due to missing type filter` : '';
+  const spriteWarn = spriteUploadOk ? '' : ' | Sprite upload to localhost:8080 failed';
+  ss(names.length+' Icons | '+sc+' Symbols | '+pc+' Patterns | '+lc+' Line Patterns | '+ec+' Forest Edges'+statusWarn+skipWarn+spriteWarn,(statusWarn||skipWarn||spriteWarn)?'err':'ok');
+}
+
+function genCode(){
+  const now=new Date().toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit',year:'numeric'});
+  let c='sprite: "'+SPRITE_URL+'",\n\n';
+  orderedGroupsForMapBuild().forEach(g=>{
+    const v=g.slots.filter(s=>s.icon).sort((a,b)=>a.zMin-b.zMin);
+    if(!v.length)return;
+    const src=sourceMetaForGroup(g);
+    const filterExpr=typeFilterForGroup(g);
+    const layerVisibility=g.visible===false?'none':'visible';
+    const opacity=normalizedOpacity(g);
+    const oMin=Math.min(...v.map(s=>s.zMin));
+    const oMax=Math.max(...v.map(s=>s.zMax));
+    const subtypePart=(src.subtypeField&&g.subtypeValue) ? ' | '+src.subtypeField+'='+g.subtypeValue : '';
+    c+='// '+g.name+' | '+(src.sourceLayer||src.source)+' | '+(src.typeField||'type')+'='+(g.typeValue||'')+subtypePart+' | scale='+(g.smoothScale===true?'interpolate':'step')+' | Z'+oMin+'-'+oMax+'\n';
+    if(g.type==='symbol'){
+      const symbolCollision=symbolCollisionLayoutForGroup(g);
+      const ie=JSON.stringify(stepExpression(v[0].icon,v.slice(1).map(s=>({zoom:Number(s.zMin)||0,value:s.icon})))).replace(/"/g,"'");
+      const codeTileSizes={};
+      v.forEach(slot=>{
+        const w=Math.max(1,Number(slot.px)||1,Number(slot.pxMax)||Number(slot.px)||1);
+        codeTileSizes[slot.icon]={w:Math.max(w,codeTileSizes[slot.icon]?codeTileSizes[slot.icon].w:1)};
+      });
+      const expr=symbolSizeExpression(v,g,codeTileSizes);
+      const se=JSON.stringify(expr).replace(/"/g,"'");
+      const beforeId=beforeLayerForGroup(g);
+      c+="map.addLayer({\n";
+      c+="  id:'"+g.id+"',\n";
+      c+="  type:'symbol',\n";
+      c+="  source:'"+src.source+"',\n";
+      if(src.sourceLayer) c+="  'source-layer':'"+src.sourceLayer+"',\n";
+      if(filterExpr) c+="  filter:"+JSON.stringify(filterExpr)+",\n";
+      c+="  minzoom:"+oMin+",\n";
+      c+="  maxzoom:"+oMax+",\n";
+      c+="  layout:{\n";
+      c+="    'visibility':'"+layerVisibility+"',\n";
+      c+="    'icon-image':"+ie+",\n";
+      c+="    'icon-size':"+se+",\n";
+      c+="    'icon-anchor':'center',\n";
+      c+="    'icon-padding':0,\n";
+      c+="    'icon-allow-overlap':"+(symbolCollision.iconAllowOverlap?'true':'false')+",\n";
+      c+="    'icon-ignore-placement':"+(symbolCollision.iconIgnorePlacement?'true':'false')+"\n";
+      c+="  },\n";
+      c+="  paint:{'icon-opacity':"+opacity+"}\n";
+      c+="}";
+      if(beforeId) c+=",'"+beforeId+"'";
+      c+=");\n\n";
+    }else if(g.type==='pattern'){
+      const pe=JSON.stringify(stepExpression(v[0].icon,v.slice(1).map(s=>({zoom:Number(s.zMin)||0,value:s.icon})))).replace(/"/g,"'");
+      c+="map.addLayer({\n";
+      c+="  id:'"+g.id+"',\n";
+      c+="  type:'fill',\n";
+      c+="  source:'"+src.source+"',\n";
+      if(src.sourceLayer) c+="  'source-layer':'"+src.sourceLayer+"',\n";
+      if(filterExpr) c+="  filter:"+JSON.stringify(filterExpr)+",\n";
+      c+="  minzoom:"+oMin+",\n";
+      c+="  maxzoom:"+oMax+",\n";
+      c+="  layout:{'visibility':'"+layerVisibility+"'},\n";
+      c+="  paint:{'fill-pattern':"+pe+",'fill-opacity':"+opacity+"}\n";
+      c+="}";
+      const beforeId=beforeLayerForGroup(g);
+      if(beforeId) c+=",'"+beforeId+"'";
+      c+=");\n";
+      c+="// Preview uses derived pattern sizes: "+v.map(s=>"Z"+s.zMin+"-"+s.zMax+" -> "+s.px+"-"+(s.pxMax||s.px)+"px").join(', ')+"\n\n";
+      if(normalizedPatternFadeEnabled(g)){
+        c+="// Soft edge fade is enabled in the test environment: width "+normalizedPatternFadeWidthPx(g)+"px | edge opacity "+normalizedPatternFadeOpacity(g)+".\n";
+        c+="// It is rendered from temporary GeoJSON edge-band polygons generated from currently visible vector-tile features.\n\n";
+      }
+    }else if(g.type==='linepattern'){
+      const pe=JSON.stringify(stepExpression(v[0].icon,v.slice(1).map(s=>({zoom:Number(s.zMin)||0,value:s.icon})))).replace(/"/g,"'");
+      const lw=JSON.stringify(lineWidthExpression(v,g)).replace(/"/g,"'");
+      const gapPx=normalizedLineGapPx(g);
+      const heightScale=normalizedLineHeightScale(g);
+      const organicMode=normalizedLineOrganic(g);
+      c+="map.addLayer({\n";
+      c+="  id:'"+g.id+"',\n";
+      c+="  type:'line',\n";
+      c+="  source:'"+src.source+"',\n";
+      if(src.sourceLayer) c+="  'source-layer':'"+src.sourceLayer+"',\n";
+      if(filterExpr) c+="  filter:"+JSON.stringify(filterExpr)+",\n";
+      c+="  minzoom:"+oMin+",\n";
+      c+="  maxzoom:"+oMax+",\n";
+      c+="  layout:{'visibility':'"+layerVisibility+"','line-cap':'round','line-join':'round'},\n";
+      c+="  paint:{'line-pattern':"+pe+",'line-width':"+lw+",'line-opacity':"+opacity+"}\n";
+      c+="}";
+      const beforeId=beforeLayerForGroup(g);
+      if(beforeId) c+=",'"+beforeId+"'";
+      c+=");\n";
+      c+="// Preview uses derived dashed line-pattern sizes: "+v.map(s=>"Z"+s.zMin+"-"+s.zMax+" -> "+s.px+"-"+(s.pxMax||s.px)+"px").join(', ')+" | gap "+gapPx+"px | height scale "+heightScale+" | organic "+(organicMode?'on':'off')+"\n\n";
+    }else{
+      c+="// Forest Edge is generated in the test environment from visible "+(src.sourceLayer||src.source)+" polygons.\n";
+      c+="// It creates a temporary GeoJSON point source along polygon edges and renders these points as symbols.\n";
+      c+="// Opacity in this preview group: "+opacity+".\n";
+      c+="// Recreate this workflow in production by exporting/precomputing a stable forest-edge point GeoJSON.\n\n";
+    }
+  });
+  c+='\n/* Concept and design: Glenys Bischoff | Created with support from Claude AI and Codex | Sprite generation based on https://github.com/stevage/mbsprite | Date: '+now+' */';
+  document.getElementById('co').textContent=c;
+}
+
+function dlPng(){
+  if(!pngBlob)return;
+  const a=document.createElement('a');a.href=URL.createObjectURL(pngBlob);a.download='sprite.png';a.click();
+}
+function dlJson(){
+  if(!jsonOut)return;
+  const b=new Blob([JSON.stringify(jsonOut,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='sprite.json';a.click();
+}
+function dlPng2x(){
+  if(!png2xBlob)return;
+  const a=document.createElement('a');a.href=URL.createObjectURL(png2xBlob);a.download='sprite@2x.png';a.click();
+}
+function dlJson2x(){
+  if(!json2xOut)return;
+  const b=new Blob([JSON.stringify(json2xOut,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='sprite@2x.json';a.click();
+}
+
+// Map
+const initialSavedState=getPersistedAppState();
+activeBasemapId=normalizeBasemapId(initialSavedState&&initialSavedState.activeBasemapId);
+nativePoiVisible=!(initialSavedState&&initialSavedState.nativePoiVisible===false);
+nativeAreaVisible=!(initialSavedState&&initialSavedState.nativeAreaVisible===false);
+inspectorEnabled=!!(initialSavedState&&initialSavedState.inspectorEnabled===true);
+poolCollapsed=!!(initialSavedState&&initialSavedState.poolCollapsed===true);
+initHeaderNote();
+bindBasemapControls();
+renderBasemapControls();
+bindPoolToggle();
+renderPoolSection();
+bindNativePoiToggle();
+renderNativePoiToggle();
+bindNativeAreaToggle();
+renderNativeAreaToggle();
+bindInspectToggle();
+renderInspectToggle();
+bindCitySearch();
+const map=new maplibregl.Map({
+  container:'map',
+  center:[16.3738,48.2082],
+  zoom:12,
+  style:currentBasemapStyleUrl(),
+  preserveDrawingBuffer:true
+});
+map.addControl(new maplibregl.NavigationControl(),'bottom-right');
+const zi=document.getElementById('zi');
+applySidebarWidth(DEFAULT_SIDEBAR_WIDTH);
+initSidebarResize();
+map.on('zoom',()=>{
+  zi.textContent='Zoom: '+map.getZoom().toFixed(1);
+  updateLegend();
+  if(!nativePoiVisible) applyNativePoiVisibility();
+});
+map.on('moveend',updateGeneratedDynamicSources);
+map.on('zoomend',updateGeneratedDynamicSources);
+map.on('error',e=>{
+  const msg=(e&&e.error&&e.error.message)?e.error.message:String((e&&e.error)||'unknown map error');
+  ss('Map error | '+msg,'err');
+});
+
+async function onBaseStyleLoaded(){
+  zi.textContent='Zoom: '+map.getZoom().toFixed(1);
+  const sourceId=configureBaseVectorSource();
+  if(!sourceId){
+    ss('Basemap loaded, but no matching vector tile source was found','err');
+    return;
+  }
+  ensureCustomGeoJsonSources();
+  nativePoiIconOpacityState={};
+  nativePoiTextLayoutState={};
+  applyBasemapLayerTweaks();
+  applyNativePoiVisibility();
+  applyNativeAreaVisibility();
+  const basemap=currentBasemapConfig();
+  let restored=false;
+  if(!appStateRestored){
+    restored=await restorePersistedState();
+    appStateRestored=true;
+  }else{
+    renderBasemapControls();
+    updateHeaderNote();
+    renderNativePoiToggle();
+    renderNativeAreaToggle();
+    renderInspectToggle();
+  }
+  ready=true;
+  if(!groups.length){
+    addGroup('symbol');
+    addGroup('pattern');
+  }
+  const hasRenderableState=Object.keys(pool).length&&groups.some(g=>g.slots.some(s=>s.icon&&pool[s.icon]));
+  if(hasRenderableState){
+    await build();
+  }else{
+    genCode();
+    syncLegendState();
+    updateLegend();
+    const msg=restored
+      ? 'Ready | State restored from localStorage | '+basemap.styleName+' | Source: '+sourceId
+      : 'Ready | '+basemap.styleName+' loaded | Source: '+sourceId+' | Upload PNGs and create groups';
+    ss(msg,restored?'ok':'');
+  }
+}
+
+map.on('style.load',()=>{
+  void onBaseStyleLoaded();
+});
+
+map.on('load',()=>{
+  zi.textContent='Zoom: '+map.getZoom().toFixed(1);
+});
+
+map.on('click',evt=>{
+  if(handleMapColorPick(evt)) return;
+  if(!inspectorEnabled) return;
+  inspectAtPoint(evt);
+});
+</script>
+</body>
+</html>
+
+

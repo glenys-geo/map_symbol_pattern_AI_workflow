@@ -1,0 +1,1552 @@
+{
+  "hospital_1": {
+    "x": 0,
+    "y": 0,
+    "width": 384,
+    "height": 256,
+    "pixelRatio": 1
+  },
+  "hospital_2": {
+    "x": 392,
+    "y": 0,
+    "width": 384,
+    "height": 208,
+    "pixelRatio": 1
+  },
+  "playground_01": {
+    "x": 784,
+    "y": 0,
+    "width": 50,
+    "height": 35,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 8",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "playground",
+        "subtypeValue": "",
+        "zoomMin": 15,
+        "zoomMax": 18,
+        "sizePx": 24,
+        "sizePxMax": 50
+      }
+    ]
+  },
+  "hospital_3": {
+    "x": 842,
+    "y": 0,
+    "width": 384,
+    "height": 240,
+    "pixelRatio": 1
+  },
+  "playground_02": {
+    "x": 1234,
+    "y": 0,
+    "width": 70,
+    "height": 51,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 8",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "playground",
+        "subtypeValue": "",
+        "zoomMin": 18,
+        "zoomMax": 20,
+        "sizePx": 50,
+        "sizePxMax": 70
+      }
+    ]
+  },
+  "playground_03": {
+    "x": 1312,
+    "y": 0,
+    "width": 100,
+    "height": 76,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 8",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "playground",
+        "subtypeValue": "",
+        "zoomMin": 20,
+        "zoomMax": 22,
+        "sizePx": 70,
+        "sizePxMax": 100
+      }
+    ]
+  },
+  "restaurant_1": {
+    "x": 1420,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 14",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "restaurant",
+        "subtypeValue": "",
+        "zoomMin": 15,
+        "zoomMax": 18,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "restaurant_2": {
+    "x": 1452,
+    "y": 0,
+    "width": 800,
+    "height": 768,
+    "pixelRatio": 1
+  },
+  "restaurant_3": {
+    "x": 2260,
+    "y": 0,
+    "width": 1120,
+    "height": 1088,
+    "pixelRatio": 1
+  },
+  "parking_1": {
+    "x": 3388,
+    "y": 0,
+    "width": 2720,
+    "height": 2544,
+    "pixelRatio": 1
+  },
+  "trash_01": {
+    "x": 6116,
+    "y": 0,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 3",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "waste_basket",
+        "subtypeValue": "waste_basket",
+        "zoomMin": 17,
+        "zoomMax": 18,
+        "sizePx": 24,
+        "sizePxMax": 28
+      }
+    ]
+  },
+  "trash_02": {
+    "x": 6152,
+    "y": 0,
+    "width": 320,
+    "height": 320,
+    "pixelRatio": 1
+  },
+  "trash_03": {
+    "x": 6480,
+    "y": 0,
+    "width": 400,
+    "height": 400,
+    "pixelRatio": 1
+  },
+  "forrest_01": {
+    "x": 6888,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Patterns 1",
+        "layerType": "pattern",
+        "visible": false,
+        "smoothScale": true,
+        "opacity": 0.65,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": true,
+        "patternFadeWidthPx": 30,
+        "patternFadeOpacity": 0.25,
+        "source": "openmaptiles",
+        "sourceLayer": "landcover",
+        "typeValue": "wood",
+        "subtypeValue": "",
+        "zoomMin": 15,
+        "zoomMax": 18,
+        "sizePx": 64,
+        "sizePxMax": 64
+      }
+    ]
+  },
+  "Forrest_02": {
+    "x": 6960,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Patterns 1",
+        "layerType": "pattern",
+        "visible": false,
+        "smoothScale": true,
+        "opacity": 0.65,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": true,
+        "patternFadeWidthPx": 30,
+        "patternFadeOpacity": 0.25,
+        "source": "openmaptiles",
+        "sourceLayer": "landcover",
+        "typeValue": "wood",
+        "subtypeValue": "",
+        "zoomMin": 18,
+        "zoomMax": 24,
+        "sizePx": 64,
+        "sizePxMax": 64
+      }
+    ]
+  },
+  "Forrest_line_symbol": {
+    "x": 7032,
+    "y": 0,
+    "width": 30,
+    "height": 30,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Line Patterns 1",
+        "layerType": "edgepoints",
+        "visible": false,
+        "smoothScale": false,
+        "opacity": 0.4,
+        "lineGapPx": 8,
+        "lineHeightScale": 0.5,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "landcover",
+        "typeValue": "wood",
+        "subtypeValue": "",
+        "zoomMin": 15,
+        "zoomMax": 22,
+        "sizePx": 10,
+        "sizePxMax": 30
+      }
+    ]
+  },
+  "subway_1": {
+    "x": 7070,
+    "y": 0,
+    "width": 50,
+    "height": 50,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 9",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "railway",
+        "subtypeValue": "",
+        "zoomMin": 15,
+        "zoomMax": 18,
+        "sizePx": 20,
+        "sizePxMax": 50
+      }
+    ]
+  },
+  "subway_2": {
+    "x": 7128,
+    "y": 0,
+    "width": 70,
+    "height": 70,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 9",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "railway",
+        "subtypeValue": "",
+        "zoomMin": 18,
+        "zoomMax": 20,
+        "sizePx": 50,
+        "sizePxMax": 70
+      }
+    ]
+  },
+  "subway_3": {
+    "x": 7206,
+    "y": 0,
+    "width": 100,
+    "height": 100,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 9",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "railway",
+        "subtypeValue": "",
+        "zoomMin": 20,
+        "zoomMax": 24,
+        "sizePx": 70,
+        "sizePxMax": 100
+      }
+    ]
+  },
+  "parking": {
+    "x": 7314,
+    "y": 0,
+    "width": 50,
+    "height": 50,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 7",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "parking",
+        "subtypeValue": "",
+        "zoomMin": 15,
+        "zoomMax": 22,
+        "sizePx": 35,
+        "sizePxMax": 50
+      }
+    ]
+  },
+  "tree_1": {
+    "x": 7372,
+    "y": 0,
+    "width": 30,
+    "height": 29,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Line Patterns 1",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 0.6,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "tree",
+        "subtypeValue": "",
+        "zoomMin": 15,
+        "zoomMax": 17,
+        "sizePx": 15,
+        "sizePxMax": 30
+      }
+    ]
+  },
+  "cafe_1": {
+    "x": 7410,
+    "y": 0,
+    "width": 30,
+    "height": 30,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 10",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "cafe",
+        "subtypeValue": "cafe",
+        "zoomMin": 15,
+        "zoomMax": 18,
+        "sizePx": 25,
+        "sizePxMax": 30
+      }
+    ]
+  },
+  "cafe_2": {
+    "x": 7448,
+    "y": 0,
+    "width": 4096,
+    "height": 4096,
+    "pixelRatio": 1
+  },
+  "cafe_3": {
+    "x": 11552,
+    "y": 0,
+    "width": 4096,
+    "height": 4096,
+    "pixelRatio": 1
+  },
+  "toilet_v3_1": {
+    "x": 15656,
+    "y": 0,
+    "width": 25,
+    "height": 25,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 11",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "toilets",
+        "subtypeValue": "toilets",
+        "zoomMin": 15,
+        "zoomMax": 18,
+        "sizePx": 25,
+        "sizePxMax": 25
+      }
+    ]
+  },
+  "toilet_v3_2": {
+    "x": 15689,
+    "y": 0,
+    "width": 1024,
+    "height": 1024,
+    "pixelRatio": 1
+  },
+  "citypark_v04_1": {
+    "x": 16721,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 11",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "park",
+        "subtypeValue": "park",
+        "zoomMin": 10,
+        "zoomMax": 16,
+        "sizePx": 22,
+        "sizePxMax": 24
+      },
+      {
+        "group": "Symbols 11",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "park",
+        "subtypeValue": "park",
+        "zoomMin": 14,
+        "zoomMax": 23,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "citypark_v04_2": {
+    "x": 16753,
+    "y": 0,
+    "width": 4096,
+    "height": 4096,
+    "pixelRatio": 1
+  },
+  "citypark_v01_cut": {
+    "x": 20857,
+    "y": 0,
+    "width": 192,
+    "height": 192,
+    "pixelRatio": 1
+  },
+  "grey_map_style_1": {
+    "x": 21057,
+    "y": 0,
+    "width": 50,
+    "height": 50,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 1",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "hospital",
+        "subtypeValue": "",
+        "zoomMin": 15,
+        "zoomMax": 17,
+        "sizePx": 25,
+        "sizePxMax": 50
+      }
+    ]
+  },
+  "grey_map_style_2": {
+    "x": 21115,
+    "y": 0,
+    "width": 150,
+    "height": 150,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 1",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "hospital",
+        "subtypeValue": "",
+        "zoomMin": 17,
+        "zoomMax": 20,
+        "sizePx": 100,
+        "sizePxMax": 150
+      }
+    ]
+  },
+  "grey_map_style_3": {
+    "x": 21273,
+    "y": 0,
+    "width": 200,
+    "height": 200,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 1",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "hospital",
+        "subtypeValue": "",
+        "zoomMin": 20,
+        "zoomMax": 24,
+        "sizePx": 150,
+        "sizePxMax": 200
+      }
+    ]
+  },
+  "attraction_1": {
+    "x": 21481,
+    "y": 0,
+    "width": 28,
+    "height": 28,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 11",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "attraction",
+        "subtypeValue": "attraction",
+        "zoomMin": 15,
+        "zoomMax": 18,
+        "sizePx": 28,
+        "sizePxMax": 28
+      }
+    ]
+  },
+  "attraction_2": {
+    "x": 21517,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 11",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "attraction",
+        "subtypeValue": "attraction",
+        "zoomMin": 18,
+        "zoomMax": 20,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "attraction_3": {
+    "x": 21549,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 11",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "attraction",
+        "subtypeValue": "attraction",
+        "zoomMin": 22,
+        "zoomMax": 22,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "tree_v02_2": {
+    "x": 21581,
+    "y": 0,
+    "width": 50,
+    "height": 50,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Line Patterns 1",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 0.6,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "tree",
+        "subtypeValue": "",
+        "zoomMin": 17,
+        "zoomMax": 20,
+        "sizePx": 15,
+        "sizePxMax": 50
+      }
+    ]
+  },
+  "grass_v04_2": {
+    "x": 21639,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Patterns 3",
+        "layerType": "pattern",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 0.25,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "landcover",
+        "typeValue": "grass",
+        "subtypeValue": "",
+        "zoomMin": 18,
+        "zoomMax": 20,
+        "sizePx": 64,
+        "sizePxMax": 64
+      }
+    ]
+  },
+  "grass_v04_3": {
+    "x": 21711,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Patterns 3",
+        "layerType": "pattern",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 0.25,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "landcover",
+        "typeValue": "grass",
+        "subtypeValue": "",
+        "zoomMin": 20,
+        "zoomMax": 22,
+        "sizePx": 64,
+        "sizePxMax": 64
+      }
+    ]
+  },
+  "dog_park_1": {
+    "x": 21783,
+    "y": 0,
+    "width": 50,
+    "height": 49,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Patterns 1",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "dog_park",
+        "subtypeValue": "dog_park",
+        "zoomMin": 16,
+        "zoomMax": 18,
+        "sizePx": 20,
+        "sizePxMax": 50
+      }
+    ]
+  },
+  "information_map_01": {
+    "x": 21841,
+    "y": 0,
+    "width": 40,
+    "height": 40,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 12",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "information",
+        "subtypeValue": "map",
+        "zoomMin": 15,
+        "zoomMax": 21,
+        "sizePx": 25,
+        "sizePxMax": 40
+      }
+    ]
+  },
+  "information_map_02": {
+    "x": 21889,
+    "y": 0,
+    "width": 400,
+    "height": 400,
+    "pixelRatio": 1
+  },
+  "dog_park_2": {
+    "x": 22297,
+    "y": 0,
+    "width": 100,
+    "height": 97,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Patterns 1",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "dog_park",
+        "subtypeValue": "dog_park",
+        "zoomMin": 18,
+        "zoomMax": 20,
+        "sizePx": 50,
+        "sizePxMax": 100
+      }
+    ]
+  },
+  "dog_park_3": {
+    "x": 22405,
+    "y": 0,
+    "width": 150,
+    "height": 145,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Patterns 1",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "dog_park",
+        "subtypeValue": "dog_park",
+        "zoomMin": 20,
+        "zoomMax": 23,
+        "sizePx": 100,
+        "sizePxMax": 150
+      }
+    ]
+  },
+  "information_01": {
+    "x": 22563,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 13",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "information",
+        "subtypeValue": "board",
+        "zoomMin": 15,
+        "zoomMax": 22,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "lake_02": {
+    "x": 22595,
+    "y": 0,
+    "width": 1024,
+    "height": 1024,
+    "pixelRatio": 1
+  },
+  "subway_entry_01": {
+    "x": 23627,
+    "y": 0,
+    "width": 30,
+    "height": 30,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 15",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "entrance",
+        "subtypeValue": "subway_entrance",
+        "zoomMin": 15,
+        "zoomMax": 18,
+        "sizePx": 20,
+        "sizePxMax": 30
+      }
+    ]
+  },
+  "subway_entry_02": {
+    "x": 23665,
+    "y": 0,
+    "width": 50,
+    "height": 50,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 15",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "entrance",
+        "subtypeValue": "subway_entrance",
+        "zoomMin": 18,
+        "zoomMax": 20,
+        "sizePx": 40,
+        "sizePxMax": 50
+      }
+    ]
+  },
+  "subway_entry_03": {
+    "x": 23723,
+    "y": 0,
+    "width": 60,
+    "height": 60,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 15",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "entrance",
+        "subtypeValue": "subway_entrance",
+        "zoomMin": 20,
+        "zoomMax": 22,
+        "sizePx": 50,
+        "sizePxMax": 60
+      }
+    ]
+  },
+  "fast_food_01": {
+    "x": 23791,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 16",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "fast_food",
+        "subtypeValue": "fast_food",
+        "zoomMin": 15,
+        "zoomMax": 16,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "fast_food_02": {
+    "x": 23823,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 16",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "fast_food",
+        "subtypeValue": "fast_food",
+        "zoomMin": 16,
+        "zoomMax": 18,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "bike_repair_01": {
+    "x": 23855,
+    "y": 0,
+    "width": 100,
+    "height": 100,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 17",
+        "layerType": "symbol",
+        "visible": false,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "bicycle",
+        "subtypeValue": "",
+        "zoomMin": 17,
+        "zoomMax": 19,
+        "sizePx": 100,
+        "sizePxMax": 100
+      }
+    ]
+  },
+  "bike_repair_02": {
+    "x": 23963,
+    "y": 0,
+    "width": 200,
+    "height": 200,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 17",
+        "layerType": "symbol",
+        "visible": false,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "bicycle",
+        "subtypeValue": "",
+        "zoomMin": 19,
+        "zoomMax": 21,
+        "sizePx": 100,
+        "sizePxMax": 200
+      }
+    ]
+  },
+  "bike_repair_03": {
+    "x": 24171,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 17",
+        "layerType": "symbol",
+        "visible": false,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "bicycle",
+        "subtypeValue": "",
+        "zoomMin": 21,
+        "zoomMax": 22,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "lake_from_imagery_03": {
+    "x": 24203,
+    "y": 0,
+    "width": 100,
+    "height": 100,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Patterns 4",
+        "layerType": "pattern",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 0.35,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "water",
+        "typeValue": "lake",
+        "subtypeValue": "",
+        "zoomMin": 18,
+        "zoomMax": 22,
+        "sizePx": 80,
+        "sizePxMax": 100
+      }
+    ]
+  },
+  "fountain_2_2": {
+    "x": 24311,
+    "y": 0,
+    "width": 45,
+    "height": 45,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 18",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "art_gallery",
+        "subtypeValue": "artwork",
+        "zoomMin": 17,
+        "zoomMax": 19,
+        "sizePx": 24,
+        "sizePxMax": 45
+      }
+    ]
+  },
+  "fountain_2_3": {
+    "x": 24364,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 18",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "art_gallery",
+        "subtypeValue": "artwork",
+        "zoomMin": 19,
+        "zoomMax": 22,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "flowerbed_01": {
+    "x": 24396,
+    "y": 0,
+    "width": 1024,
+    "height": 1024,
+    "pixelRatio": 1
+  },
+  "flowerbed_v02_2": {
+    "x": 25428,
+    "y": 0,
+    "width": 1024,
+    "height": 1024,
+    "pixelRatio": 1
+  },
+  "flowerbed_v02_3": {
+    "x": 26460,
+    "y": 0,
+    "width": 80,
+    "height": 80,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Patterns 4",
+        "layerType": "pattern",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "landcover",
+        "typeValue": "grass",
+        "subtypeValue": "flowerbed",
+        "zoomMin": 18,
+        "zoomMax": 22,
+        "sizePx": 30,
+        "sizePxMax": 80
+      }
+    ]
+  },
+  "bench_01": {
+    "x": 26548,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 19",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "trees-vienna",
+        "sourceLayer": null,
+        "typeValue": "bench",
+        "subtypeValue": "",
+        "zoomMin": 17,
+        "zoomMax": 19,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "bench_02": {
+    "x": 26580,
+    "y": 0,
+    "width": 24,
+    "height": 24,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 19",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "trees-vienna",
+        "sourceLayer": null,
+        "typeValue": "bench",
+        "subtypeValue": "",
+        "zoomMin": 19,
+        "zoomMax": 20,
+        "sizePx": 24,
+        "sizePxMax": 24
+      }
+    ]
+  },
+  "bench_03": {
+    "x": 26612,
+    "y": 0,
+    "width": 80,
+    "height": 80,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 19",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": false,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "trees-vienna",
+        "sourceLayer": null,
+        "typeValue": "bench",
+        "subtypeValue": "",
+        "zoomMin": 19,
+        "zoomMax": 22,
+        "sizePx": 40,
+        "sizePxMax": 80
+      }
+    ]
+  },
+  "trash_high_zoom_2": {
+    "x": 26700,
+    "y": 0,
+    "width": 30,
+    "height": 30,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 3",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "waste_basket",
+        "subtypeValue": "waste_basket",
+        "zoomMin": 18,
+        "zoomMax": 22,
+        "sizePx": 15,
+        "sizePxMax": 30
+      }
+    ]
+  },
+  "trash_high_zoom_3": {
+    "x": 26738,
+    "y": 0,
+    "width": 50,
+    "height": 50,
+    "pixelRatio": 1,
+    "config": [
+      {
+        "group": "Symbols 3",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": true,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "waste_basket",
+        "subtypeValue": "waste_basket",
+        "zoomMin": 22,
+        "zoomMax": 24,
+        "sizePx": 40,
+        "sizePxMax": 50
+      }
+    ]
+  }
+}

@@ -6,13 +6,15 @@ const HOST='localhost';
 const PORT=Number(process.env.PORT||8080);
 const ROOT_DIR=__dirname;
 const STYLE_FILE=path.join(ROOT_DIR,'style.json');
-const HTML_FILE=path.join(ROOT_DIR,'sprite_builder.html');
+const HTML_FILE=path.join(ROOT_DIR,'sprite_builder_map_libre.html');
 const GENERATED_DIR=path.join(ROOT_DIR,'generated_sprite');
 const SPRITE_JSON_FILE=path.join(GENERATED_DIR,'sprite.json');
 const SPRITE_PNG_FILE=path.join(GENERATED_DIR,'sprite.png');
+const SPRITE_2X_JSON_FILE=path.join(GENERATED_DIR,'sprite@2x.json');
+const SPRITE_2X_PNG_FILE=path.join(GENERATED_DIR,'sprite@2x.png');
 const MAPTOOLKIT_BASE='https://dataconnector.maptoolkit.net/maptoolkit/';
 const MAPTOOLKIT_PROXY_PREFIX='/maptoolkit/';
-const MAX_BODY_BYTES=50*1024*1024;
+const MAX_BODY_BYTES=150*1024*1024;
 const FALLBACK_SPRITE_PNG=Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAffR6iwAAAABJRU5ErkJggg==',
   'base64'
@@ -118,6 +120,7 @@ function mimeType(filePath){
   if(ext==='.js') return 'application/javascript; charset=utf-8';
   if(ext==='.css') return 'text/css; charset=utf-8';
   if(ext==='.json') return 'application/json; charset=utf-8';
+  if(ext==='.geojson') return 'application/geo+json; charset=utf-8';
   if(ext==='.png') return 'image/png';
   if(ext==='.svg') return 'image/svg+xml';
   return 'application/octet-stream';
@@ -145,6 +148,15 @@ async function saveSprite(body){
   await fs.mkdir(GENERATED_DIR,{recursive:true});
   await fs.writeFile(SPRITE_JSON_FILE,JSON.stringify(payload.spriteJson,null,2),'utf8');
   await fs.writeFile(SPRITE_PNG_FILE,Buffer.from(match[1],'base64'));
+
+  if(payload.sprite2xJson&&typeof payload.sprite2xJson==='object'&&typeof payload.sprite2xPngDataUrl==='string'){
+    const match2x=payload.sprite2xPngDataUrl.match(/^data:image\/png;base64,(.+)$/);
+    if(!match2x){
+      throw new Error('sprite2xPngDataUrl ist kein PNG-Data-URL');
+    }
+    await fs.writeFile(SPRITE_2X_JSON_FILE,JSON.stringify(payload.sprite2xJson,null,2),'utf8');
+    await fs.writeFile(SPRITE_2X_PNG_FILE,Buffer.from(match2x[1],'base64'));
+  }
 }
 
 async function proxyMapToolkit(req,res,url){
@@ -212,6 +224,18 @@ async function handleRequest(req,res){
       }
       return;
     }
+    if(req.method==='GET'&&url.pathname==='/sprite/sprite@2x.json'){
+      try{
+        await sendFile(res,SPRITE_2X_JSON_FILE);
+      }catch(e){
+        try{
+          await sendFile(res,SPRITE_JSON_FILE);
+        }catch(err){
+          sendJson(res,200,{});
+        }
+      }
+      return;
+    }
     if(req.method==='GET'&&url.pathname==='/sprite/sprite.png'){
       try{
         await sendFile(res,SPRITE_PNG_FILE);
@@ -219,6 +243,20 @@ async function handleRequest(req,res){
         setCommonHeaders(res,'image/png');
         res.writeHead(200);
         res.end(FALLBACK_SPRITE_PNG);
+      }
+      return;
+    }
+    if(req.method==='GET'&&url.pathname==='/sprite/sprite@2x.png'){
+      try{
+        await sendFile(res,SPRITE_2X_PNG_FILE);
+      }catch(e){
+        try{
+          await sendFile(res,SPRITE_PNG_FILE);
+        }catch(err){
+          setCommonHeaders(res,'image/png');
+          res.writeHead(200);
+          res.end(FALLBACK_SPRITE_PNG);
+        }
       }
       return;
     }
@@ -242,7 +280,8 @@ if(require.main===module){
     handleRequest(req,res);
   }).listen(PORT,HOST,()=>{
     console.log(`Sprite Builder Server: http://${HOST}:${PORT}`);
-    console.log(`HTML: http://${HOST}:${PORT}/sprite_builder.html`);
+    console.log(`HTML: http://${HOST}:${PORT}/`);
+    console.log(`HTML file: http://${HOST}:${PORT}/sprite_builder_map_libre.html`);
     console.log(`Style: http://${HOST}:${PORT}/style.json`);
     console.log(`Sprite: http://${HOST}:${PORT}/sprite/sprite`);
   });
