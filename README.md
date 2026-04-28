@@ -60,6 +60,32 @@ Do not open the HTML file directly with `file://`, because the app depends on th
 - [`shared_sprites/community_uploads`](./shared_sprites/community_uploads)
   Tracked folder for user-contributed bundles
 
+
+## There are two Masterprompts, which are helpful for generating multiscale map symbols and patterns 
+
+### For symbols:
+```
+Create a professional cartography sprite sheet, three variations of a {symbol} symbol for different zoom levels.
+[Left]: ultra minimalist flat icon, show recognizable form. No details, one colour.
+[Center]: stylized flat vector, with a little more details, dont add details of the surroundings.
+[Right]: more detailed symbol with shading.
+All three symbols should have clean lines, consistent {(colour)} colour palette, flat design. {Transparent} background. Be self-explanatory and generic map icons, dont make large outline changes.
+Use the same style and colours, but increase in detail so if they are later put above each other there should be a smooth transition between the unique symbols.
+Important: size ratio should be 1, 1.5, 2.25
+No text.
+```
+
+### For patterns:
+```
+Create a professional cartography sprite sheet, three variations of a {pattern} pattern for different zoom levels (attached image as reference for lod).
+[Left]: ultra minimalist colour field {hex #}. No details, one colour, no text.
+[Center]: stylized flat forms, with a little more details, dont add details of the surroundings
+[Right]: more detailed pattern with shading.
+All three patterns should have clean lines, consistent colour palette {(hex #)}, flat design. {Transparent} background. Be self-explanatory and generic, minimalistic pattern, dont make large outline changes.
+Important: size ratio should be 1, 1.5, 2.25. Format 1:1 for the three patterns.
+No text, no numbers.
+```
+
 ## Important note
 
 - If you want to share a finished sprite bundle, copy it into:
