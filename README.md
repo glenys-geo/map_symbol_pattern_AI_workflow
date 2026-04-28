@@ -60,7 +60,7 @@ In the environment you can:
 
 ## Project notes
 
-- The Sprite Builder workflow and scripts were developed with support from Codex.
+- The Sprite Builder scripts were developed with support from Codex.
 - The test environment uses MapLibre GL JS together with OpenFreeMap basemap styles and related vector map data.
 - Third-party license notes for reused code are documented in [`THIRD_PARTY_LICENSES.md`](./THIRD_PARTY_LICENSES.md).
 
