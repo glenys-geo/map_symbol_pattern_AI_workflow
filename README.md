@@ -1,4 +1,4 @@
-# Sprite Builder & Test Environment for generated AI Maps Symbols and Patterns🗺️
+# Sprite Builder & Test Environment for generated AI Map Symbols and Patterns🗺️
 ### This workflow was created within the process of the masterthesis "Affective Design of symbols and pattern with generative artificial intelligence" for the university of vienna🎓.
 
 ## Run locally
@@ -57,4 +57,5 @@ Do not open the HTML file directly with `file://`, because the app depends on th
 - or `shared_sprites/community_uploads`
 
 - For tests cases u can use my symbols and pattern examples:
+
 - `shared_sprites/examples`
