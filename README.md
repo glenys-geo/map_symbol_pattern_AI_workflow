@@ -33,7 +33,7 @@ Do not open the HTML file directly with `file://`, because the app depends on th
 - you can search for places (4)
 - for a reference you can turn the basemap symbols and patterns on (6)
 
-<img width="2012" height="1309" alt="Sprite_Builder" src="https://github.com/user-attachments/assets/73bd3e23-5c85-4fe9-a0d1-7b37c9720cfa" />
+<img width="2012" height="1173" alt="Sprite_Builder" src="https://github.com/user-attachments/assets/dcb1e18a-803d-4465-8aef-3105fa95ca8e" />
 
 ## Folder structure
 
