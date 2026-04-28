@@ -1,4 +1,5 @@
-# Sprite Builder
+# Sprite Builder & Test Environment for AI Maps Symbols and Patterns🗺️
+### This workflow was created within the process of the masterthesis "Affective Design of symbols and pattern with generative artificial intelligence" for the university of vienna🎓.
 
 ## Run locally
 
@@ -7,7 +8,6 @@ use powershell or cmd inside the folder with the files
 ```
 node .\sprite_builder_server.js
 ```
-
 
 Then open:
 
