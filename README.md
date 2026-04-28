@@ -102,11 +102,12 @@ No text.
 
 ### For patterns:
 ```
-Create a professional cartography sprite sheet, three variations of a {pattern} pattern for different zoom levels (attached image as reference for lod).
+Create a professional cartography sprite sheet, three variations of a {pattern} pattern for different zoom levels.
 [Left]: ultra minimalist colour field {hex #}. No details, one colour, no text.
 [Center]: stylized flat forms, with a little more details, dont add details of the surroundings
 [Right]: more detailed pattern with shading.
 All three patterns should have clean lines, consistent colour palette {(hex #)}, flat design. {Transparent} background. Be self-explanatory and generic, minimalistic pattern, dont make large outline changes.
+Use the same style and colours, but increase in detail so if they are later put above each other, there should be a smooth transition between the unique pattern elements. Make it (seamless tiles) in every direction.
 Important: size ratio should be 1, 1.5, 2.25. Format 1:1 for the three patterns.
 No text, no numbers.
 ```
