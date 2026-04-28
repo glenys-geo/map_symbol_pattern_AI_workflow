@@ -36,6 +36,10 @@ Do not open the HTML file directly with `file://`, because the app depends on th
   Local Node server for the app, style, sprite endpoints, and local data
 - [`style.json`](./style.json)
   Basemap style used by the app
+- [`generative_ai_assets`](./generative_ai_assets)
+  Source symbols and patterns created with generative AI before sprite export
+- [`generative_ai_assets/examples`](./generative_ai_assets/examples)
+  Example symbols and patterns you want to share as source material
 - [`generated_sprite`](./generated_sprite)
   Local writable output folder for newly generated sprite bundles
 - [`shared_sprites/examples`](./shared_sprites/examples)
