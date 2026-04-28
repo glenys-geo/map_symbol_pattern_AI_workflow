@@ -38,18 +38,24 @@ Do not open the HTML file directly with `file://`, because the app depends on th
 - generated sprite files
 - local GeoJSON test data
 
-## In the environment you can
+## Sprite Builder UI
 
-- choose an open basemap style such as OpenFreeMap / MapLibre-based styles
-- upload PNG symbols and patterns to the icon pool
-- assign them to symbol, pattern, line pattern, and forest edge groups
-- inspect classes and subclasses in the map
-- define zoom ranges and pixel sizes
-- build `sprite.png` and `sprite.json`
+The following figure shows the numbered user interface of the Sprite Builder:
+
+![Sprite Builder UI](workflow/Sprite_Builder_ui.png)
+
+In the environment you can:
+
+- choose an open basemap style such as OpenFreeMap / MapLibre-based styles `(1)`
+- upload PNG symbols and patterns to the icon pool `(2)`
+- assign them to symbol, pattern, line pattern, and forest edge groups `(3)`
+- search for places and navigate within the map `(4)`
+- inspect classes and subclasses in the map `(5)`
+- compare generated results with native basemap symbols and areas `(6)`
+- build `sprite.png` and `sprite.json` `(7)`
 - re-import an existing sprite bundle
+- define zoom ranges and pixel sizes
 - test symbol and pattern transitions across zoom levels
-- search for places
-- compare your generated symbols with the native basemap symbols and areas
 
 ## Project notes
 
