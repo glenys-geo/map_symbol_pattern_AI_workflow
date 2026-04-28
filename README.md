@@ -28,6 +28,12 @@ Do not open the HTML file directly with `file://`, because the app depends on th
 - build `sprite.png` and `sprite.json`
 - re-import an existing sprite bundle into the test environment
 
+## Project notes
+
+- The Sprite Builder workflow and scripts were developed with support from Codex.
+- The map test environment uses MapLibre GL JS together with OpenFreeMap basemap styles and related vector map data.
+- Third-party license notes for reused code are documented in [`THIRD_PARTY_LICENSES.md`](./THIRD_PARTY_LICENSES.md).
+
 ## Folder structure
 
 - [`sprite_builder_map_libre.html`](./sprite_builder_map_libre.html)

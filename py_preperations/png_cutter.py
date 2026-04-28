@@ -6,6 +6,12 @@ individual PNGs with a transparent background and a defined output size.
 
 Detection:          Zone-based split + dilation/scipy for tight bounding boxes
 Background removal: derived from maplibre_pipeline.py
+Seamless tiling:    adapted from work by Artem iG (MIT License)
+
+Project note:
+    This script was created for the Sprite Builder workflow with support from Codex.
+    The related test environment uses OpenFreeMap basemap styles and MapLibre GL JS.
+    See THIRD_PARTY_LICENSES.md for third-party license details.
 
 Dependencies:
     pip install Pillow numpy scipy
@@ -274,7 +280,8 @@ def remove_background(img, bg_threshold=240, edge_feather=3):
 def make_seamless(img, overlap=0.1):
     """
     Blends opposite edges of the image so it tiles without visible seams.
-    Derived from seamless_pattern.py (uses img2texture.image_to_seamless).
+    Adapted from work by Artem iG (MIT License) via
+    img2texture.image_to_seamless.
 
     The overlap parameter controls how strongly the edges are blended:
       0.05 = minimal blending, subtle effect
@@ -291,6 +298,7 @@ def make_seamless(img, overlap=0.1):
     original input size using high-quality resampling.
 
     Dependency: pip install img2texture
+    License note: see THIRD_PARTY_LICENSES.md
     """
     from img2texture import image_to_seamless
     original_size = img.size
