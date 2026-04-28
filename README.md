@@ -1,4 +1,5 @@
-# Sprite Builder
+# Sprite Builder & Test Environment for generated AI Map Symbols and Patterns🗺️
+### This workflow was created within the process of the masterthesis "Affective Design of symbols and pattern with generative artificial intelligence" for the university of vienna🎓.
 
 ## Run locally
 
@@ -7,7 +8,6 @@ use powershell or cmd inside the folder with the files
 ```
 node .\sprite_builder_server.js
 ```
-
 
 Then open:
 
@@ -22,11 +22,18 @@ Do not open the HTML file directly with `file://`, because the app depends on th
 
 ## In the environment you can:
 
-- upload PNG symbols and patterns
-- assign them to symbol, pattern, line pattern or forest edge groups
+- choose a open source basemap (OpenFreeMap, MapLibre) (1) 
+- upload PNG symbols and patterns ro the "Icon Pool" (2)
+- assign them to symbol, pattern, line pattern or forest edge groups (3)
+- you can indentify the clases and subclasses with the inspector (5)
 - define zoom ranges and pixel sizes
-- build `sprite.png` and `sprite.json`
+- build `sprite.png` and `sprite.json` (7)
 - re-import an existing sprite bundle into the test environment
+- test which zoom levels works the best for your symbols pattern (4)
+- you can search for places (4)
+- for a reference you can turn the basemap symbols and patterns on (6)
+
+<img width="2012" height="1173" alt="Sprite_Builder" src="https://github.com/user-attachments/assets/dcb1e18a-803d-4465-8aef-3105fa95ca8e" />
 
 ## Project notes
 
@@ -60,4 +67,5 @@ Do not open the HTML file directly with `file://`, because the app depends on th
 - or `shared_sprites/community_uploads`
 
 - For tests cases u can use my symbols and pattern examples:
+
 - `shared_sprites/examples`
