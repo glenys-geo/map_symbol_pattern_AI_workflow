@@ -1,6 +1,7 @@
-# Sprite Builder
+# Sprite Builder🗺️
+Worklfow to generate symbols and patterns for multi-scale maps with AI
 
-This repository contains the MapLibre-based test environment and supporting workflow used in the master thesis:
+This repository contains the MapLibre-based multi-scale test environment and supporting workflow used in the master thesis🎓:
 
 *"Affective Design of Symbols and Patterns with Generative Artificial Intelligence"*
 
