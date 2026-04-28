@@ -1,1 +1,5 @@
-git rm --cached generated_sprite
+generated_sprite/*
+!generated_sprite/.gitkeep
+!generated_sprite/README.md
+py/seamless_pattern.py
+py/seamless_pattern.py
