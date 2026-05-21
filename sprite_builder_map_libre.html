@@ -341,6 +341,19 @@ const SRCS = {
     beforeIdCandidates:['transportation','building','housenumber'],
     beforeSourceLayers:['water_name','waterway_name','transportation','transportation_name','aeroway','building','housenumber','poi']
   },
+  'transportation': {
+    lbl:'Transportation (transportation)',
+    pt:false,
+    source:'openfreemap-vector',
+    sourceLayer:'transportation',
+    typeField:'class',
+    subtypeField:'subclass',
+    defaultTypeValue:'path',
+    defaultSubtypeValue:'',
+    beforeId:null,
+    beforeIdCandidates:['building','housenumber'],
+    beforeSourceLayers:['transportation_name','building','housenumber','poi']
+  },
   'trees_vienna': {
     lbl:'Vienna Trees (GeoJSON)',
     pt:true,
@@ -2814,8 +2827,22 @@ function isBenchOrWasteSymbolGroup(g){
   return typeValue==='bench'||typeValue==='waste_basket'||subtypeValue==='waste_basket';
 }
 
+function isInformationMapSymbolGroup(g){
+  if(!g||g.type!=='symbol') return false;
+  const typeValue=((g.typeValue||'')+'').trim().toLowerCase();
+  const subtypeValue=((g.subtypeValue||'')+'').trim().toLowerCase();
+  return typeValue==='information_map'||(typeValue==='information'&&subtypeValue==='map');
+}
+
+function isAttractionSymbolGroup(g){
+  if(!g||g.type!=='symbol') return false;
+  const typeValue=((g.typeValue||'')+'').trim().toLowerCase();
+  const subtypeValue=((g.subtypeValue||'')+'').trim().toLowerCase();
+  return typeValue==='attraction'||subtypeValue==='attraction';
+}
+
 function avoidsNativeLabelCollisions(g){
-  return isSubwayEntranceSymbolGroup(g)||isBenchOrWasteSymbolGroup(g);
+  return isSubwayEntranceSymbolGroup(g)||isBenchOrWasteSymbolGroup(g)||isInformationMapSymbolGroup(g)||isAttractionSymbolGroup(g);
 }
 
 function symbolCollisionLayoutForGroup(g){
@@ -3507,7 +3534,16 @@ async function build(){
   if(!Object.keys(pool).length){ss('No icons in pool','err');return;}
   if(!ready){ss('Map is not ready yet','err');return;}
 
-  const PAD=8, names=Object.keys(pool);
+  const PAD=8;
+  const usedIconNames=new Set();
+  groups.forEach(g=>g.slots.forEach(s=>{
+    if(s.icon&&pool[s.icon]) usedIconNames.add(s.icon);
+  }));
+  const names=Object.keys(pool).filter(name=>usedIconNames.has(name));
+  if(!names.length){
+    ss('No used icons assigned to any group','err');
+    return;
+  }
 
   // Remove previous preview layers before refreshing runtime images.
   active.forEach(id=>{try{if(map.getLayer(id))map.removeLayer(id);}catch(e){}});
@@ -3518,14 +3554,12 @@ async function build(){
   // Pre-compute tile sizes (scale to largest configured sizePx per icon)
   const tileSizes={};
   names.forEach(name=>{
-    let sz=1, used=false;
+    let sz=1;
     groups.forEach(g=>g.slots.forEach(s=>{
       if(s.icon===name){
-        used=true;
         sz=Math.max(sz,s.px,s.pxMax||s.px);
       }
     }));
-    if(!used) sz=pool[name].w;
     const ic=pool[name];
     tileSizes[name]={w:sz, h:Math.round(sz*(ic.h/ic.w))};
   });
