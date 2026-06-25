@@ -129,7 +129,7 @@
       {
         "group": "Symbols 3",
         "layerType": "symbol",
-        "visible": false,
+        "visible": true,
         "smoothScale": true,
         "opacity": 1,
         "lineGapPx": 45,
@@ -362,8 +362,8 @@
   "tree_1": {
     "x": 1592,
     "y": 0,
-    "width": 60,
-    "height": 58,
+    "width": 70,
+    "height": 68,
     "pixelRatio": 2,
     "config": [
       {
@@ -378,19 +378,19 @@
         "patternFadeEnabled": false,
         "patternFadeWidthPx": 32,
         "patternFadeOpacity": 0.32,
-        "source": "openmaptiles",
-        "sourceLayer": "poi",
+        "source": "trees-vienna",
+        "sourceLayer": null,
         "typeValue": "tree",
         "subtypeValue": "",
-        "zoomMin": 15,
+        "zoomMin": 16,
         "zoomMax": 17,
-        "sizePx": 15,
-        "sizePxMax": 30
+        "sizePx": 31,
+        "sizePxMax": 35
       }
     ]
   },
   "cafe_1": {
-    "x": 1668,
+    "x": 1678,
     "y": 0,
     "width": 60,
     "height": 60,
@@ -420,7 +420,7 @@
     ]
   },
   "toilet_v3_1": {
-    "x": 1744,
+    "x": 1754,
     "y": 0,
     "width": 50,
     "height": 50,
@@ -450,7 +450,7 @@
     ]
   },
   "citypark_v04_1": {
-    "x": 1810,
+    "x": 1820,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -501,7 +501,7 @@
     ]
   },
   "grey_map_style_1": {
-    "x": 1874,
+    "x": 1884,
     "y": 0,
     "width": 100,
     "height": 100,
@@ -531,7 +531,7 @@
     ]
   },
   "grey_map_style_2": {
-    "x": 1990,
+    "x": 2000,
     "y": 0,
     "width": 300,
     "height": 300,
@@ -561,7 +561,7 @@
     ]
   },
   "grey_map_style_3": {
-    "x": 2306,
+    "x": 2316,
     "y": 0,
     "width": 400,
     "height": 400,
@@ -591,7 +591,7 @@
     ]
   },
   "attraction_1": {
-    "x": 2722,
+    "x": 2732,
     "y": 0,
     "width": 56,
     "height": 56,
@@ -621,7 +621,7 @@
     ]
   },
   "attraction_2": {
-    "x": 2794,
+    "x": 2804,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -651,7 +651,7 @@
     ]
   },
   "attraction_3": {
-    "x": 2858,
+    "x": 2868,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -681,7 +681,7 @@
     ]
   },
   "tree_v02_2": {
-    "x": 2922,
+    "x": 2932,
     "y": 0,
     "width": 100,
     "height": 100,
@@ -699,8 +699,8 @@
         "patternFadeEnabled": false,
         "patternFadeWidthPx": 32,
         "patternFadeOpacity": 0.32,
-        "source": "openmaptiles",
-        "sourceLayer": "poi",
+        "source": "trees-vienna",
+        "sourceLayer": null,
         "typeValue": "tree",
         "subtypeValue": "",
         "zoomMin": 17,
@@ -711,7 +711,7 @@
     ]
   },
   "grass_v04_2": {
-    "x": 3038,
+    "x": 3048,
     "y": 0,
     "width": 128,
     "height": 128,
@@ -741,7 +741,7 @@
     ]
   },
   "grass_v04_3": {
-    "x": 3182,
+    "x": 3192,
     "y": 0,
     "width": 128,
     "height": 128,
@@ -771,7 +771,7 @@
     ]
   },
   "dog_park_1": {
-    "x": 3326,
+    "x": 3336,
     "y": 0,
     "width": 100,
     "height": 98,
@@ -801,7 +801,7 @@
     ]
   },
   "information_map_01": {
-    "x": 3442,
+    "x": 3452,
     "y": 0,
     "width": 80,
     "height": 80,
@@ -824,14 +824,14 @@
         "typeValue": "information",
         "subtypeValue": "map",
         "zoomMin": 15,
-        "zoomMax": 21,
+        "zoomMax": 18,
         "sizePx": 25,
         "sizePxMax": 40
       }
     ]
   },
   "dog_park_2": {
-    "x": 3538,
+    "x": 3548,
     "y": 0,
     "width": 200,
     "height": 194,
@@ -861,7 +861,7 @@
     ]
   },
   "dog_park_3": {
-    "x": 3754,
+    "x": 3764,
     "y": 0,
     "width": 300,
     "height": 290,
@@ -891,7 +891,7 @@
     ]
   },
   "information_01": {
-    "x": 4070,
+    "x": 4080,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -921,7 +921,7 @@
     ]
   },
   "subway_entry_01": {
-    "x": 4134,
+    "x": 4144,
     "y": 0,
     "width": 60,
     "height": 60,
@@ -951,7 +951,7 @@
     ]
   },
   "subway_entry_02": {
-    "x": 4210,
+    "x": 4220,
     "y": 0,
     "width": 100,
     "height": 100,
@@ -981,7 +981,7 @@
     ]
   },
   "subway_entry_03": {
-    "x": 4326,
+    "x": 4336,
     "y": 0,
     "width": 120,
     "height": 120,
@@ -1011,7 +1011,7 @@
     ]
   },
   "fast_food_01": {
-    "x": 4462,
+    "x": 4472,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -1041,7 +1041,7 @@
     ]
   },
   "fast_food_02": {
-    "x": 4526,
+    "x": 4536,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -1071,7 +1071,7 @@
     ]
   },
   "bike_repair_01": {
-    "x": 4590,
+    "x": 4600,
     "y": 0,
     "width": 200,
     "height": 200,
@@ -1101,7 +1101,7 @@
     ]
   },
   "bike_repair_02": {
-    "x": 4806,
+    "x": 4816,
     "y": 0,
     "width": 400,
     "height": 400,
@@ -1131,7 +1131,7 @@
     ]
   },
   "bike_repair_03": {
-    "x": 5222,
+    "x": 5232,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -1161,7 +1161,7 @@
     ]
   },
   "lake_from_imagery_03": {
-    "x": 5286,
+    "x": 5296,
     "y": 0,
     "width": 200,
     "height": 200,
@@ -1172,7 +1172,7 @@
         "layerType": "pattern",
         "visible": true,
         "smoothScale": false,
-        "opacity": 0.35,
+        "opacity": 0.2,
         "lineGapPx": 45,
         "lineHeightScale": 0.82,
         "lineOrganic": false,
@@ -1191,7 +1191,7 @@
     ]
   },
   "fountain_2_2": {
-    "x": 5502,
+    "x": 5512,
     "y": 0,
     "width": 90,
     "height": 90,
@@ -1200,7 +1200,7 @@
       {
         "group": "Symbols 18",
         "layerType": "symbol",
-        "visible": true,
+        "visible": false,
         "smoothScale": true,
         "opacity": 1,
         "lineGapPx": 45,
@@ -1221,7 +1221,7 @@
     ]
   },
   "fountain_2_3": {
-    "x": 5608,
+    "x": 5618,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -1230,7 +1230,7 @@
       {
         "group": "Symbols 18",
         "layerType": "symbol",
-        "visible": true,
+        "visible": false,
         "smoothScale": true,
         "opacity": 1,
         "lineGapPx": 45,
@@ -1251,7 +1251,7 @@
     ]
   },
   "flowerbed_v02_3": {
-    "x": 5672,
+    "x": 5682,
     "y": 0,
     "width": 160,
     "height": 160,
@@ -1281,7 +1281,7 @@
     ]
   },
   "bench_01": {
-    "x": 5848,
+    "x": 5858,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -1299,8 +1299,8 @@
         "patternFadeEnabled": false,
         "patternFadeWidthPx": 32,
         "patternFadeOpacity": 0.32,
-        "source": "openmaptiles",
-        "sourceLayer": "poi",
+        "source": "benches-vienna",
+        "sourceLayer": null,
         "typeValue": "bench",
         "subtypeValue": "",
         "zoomMin": 17,
@@ -1311,7 +1311,7 @@
     ]
   },
   "bench_02": {
-    "x": 5912,
+    "x": 5922,
     "y": 0,
     "width": 48,
     "height": 48,
@@ -1329,8 +1329,8 @@
         "patternFadeEnabled": false,
         "patternFadeWidthPx": 32,
         "patternFadeOpacity": 0.32,
-        "source": "openmaptiles",
-        "sourceLayer": "poi",
+        "source": "benches-vienna",
+        "sourceLayer": null,
         "typeValue": "bench",
         "subtypeValue": "",
         "zoomMin": 19,
@@ -1341,7 +1341,7 @@
     ]
   },
   "bench_03": {
-    "x": 5976,
+    "x": 5986,
     "y": 0,
     "width": 160,
     "height": 160,
@@ -1359,8 +1359,8 @@
         "patternFadeEnabled": false,
         "patternFadeWidthPx": 32,
         "patternFadeOpacity": 0.32,
-        "source": "openmaptiles",
-        "sourceLayer": "poi",
+        "source": "benches-vienna",
+        "sourceLayer": null,
         "typeValue": "bench",
         "subtypeValue": "",
         "zoomMin": 19,
@@ -1371,7 +1371,7 @@
     ]
   },
   "trash_high_zoom_2": {
-    "x": 6152,
+    "x": 6162,
     "y": 0,
     "width": 60,
     "height": 60,
@@ -1380,7 +1380,7 @@
       {
         "group": "Symbols 3",
         "layerType": "symbol",
-        "visible": false,
+        "visible": true,
         "smoothScale": true,
         "opacity": 1,
         "lineGapPx": 45,
@@ -1401,7 +1401,7 @@
     ]
   },
   "trash_high_zoom_3": {
-    "x": 6228,
+    "x": 6238,
     "y": 0,
     "width": 100,
     "height": 100,
@@ -1410,7 +1410,7 @@
       {
         "group": "Symbols 3",
         "layerType": "symbol",
-        "visible": false,
+        "visible": true,
         "smoothScale": true,
         "opacity": 1,
         "lineGapPx": 45,
@@ -1426,6 +1426,36 @@
         "zoomMin": 22,
         "zoomMax": 24,
         "sizePx": 40,
+        "sizePxMax": 50
+      }
+    ]
+  },
+  "infosign_9": {
+    "x": 6354,
+    "y": 0,
+    "width": 100,
+    "height": 98,
+    "pixelRatio": 2,
+    "config": [
+      {
+        "group": "Symbols 12",
+        "layerType": "symbol",
+        "visible": true,
+        "smoothScale": true,
+        "opacity": 1,
+        "lineGapPx": 45,
+        "lineHeightScale": 0.82,
+        "lineOrganic": false,
+        "patternFadeEnabled": false,
+        "patternFadeWidthPx": 32,
+        "patternFadeOpacity": 0.32,
+        "source": "openmaptiles",
+        "sourceLayer": "poi",
+        "typeValue": "information",
+        "subtypeValue": "map",
+        "zoomMin": 19,
+        "zoomMax": 20,
+        "sizePx": 50,
         "sizePxMax": 50
       }
     ]
